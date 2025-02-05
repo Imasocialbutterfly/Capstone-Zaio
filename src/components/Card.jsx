@@ -8,16 +8,22 @@ import {
   TextOverlay,
 } from "./Card.styled";
 
+const DEFAULT_IMAGE = "https://via.placeholder.com/400x300";
+
 const Card = ({
-  imageUrl = "/api/placeholder/400/300",
+  imageUrl = DEFAULT_IMAGE,
   city = "City Name",
   country = "Country",
   className = "",
 }) => {
+
   return (
     <CardContainer className={className}>
       <ImageContainer>
-        <CardImage src={imageUrl} alt={`${city}, ${country}`} />
+        <CardImage
+          src={imageUrl}
+          alt={`${city}, ${country}`}
+        />
       </ImageContainer>
 
       <TextOverlay>

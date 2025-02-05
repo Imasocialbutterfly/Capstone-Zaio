@@ -1,0 +1,21 @@
+export const categoriesData = {
+    "Destinations for arts and culture": [
+      { name: "Eiffel Tower", location: "Paris, France" },
+      { name: "Colosseum", location: "Rome, Italy" },
+      { name: "Great Wall", location: "Beijing, China" },
+      { name: "Statue of Liberty", location: "New York, USA" },
+      { name: "Sydney Opera House", location: "Sydney, Australia" },
+      { name: "Christ the Redeemer", location: "Rio de Janeiro, Brazil" },
+      { name: "Shibuya Crossing", location: "Tokyo, Japan" },
+      { name: "Table Mountain", location: "Cape Town, South Africa" },
+      { name: "Santorini", location: "Santorini, Greece" },
+      { name: "Big Ben", location: "London, UK" },
+      { name: "Sagrada Familia", location: "Barcelona, Spain" },
+      { name: "Grand Canyon", location: "Arizona, USA" },
+    ],
+    "Destinations for outdoor adventure": [],
+    "Mountains cabins": [],
+    "Beach destinations": [],
+    "Popular destinations": [],
+    "Unique stays": [],
+  };

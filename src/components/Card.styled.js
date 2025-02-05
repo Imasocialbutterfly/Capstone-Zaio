@@ -29,17 +29,18 @@ export const TextOverlay = styled.div`
     bottom: 0;
     left: 0;
     right: 0;
-    background: linear-gradient(to top, rgba(236, 72, 153,1), rgba(236, 7, 2, 153, 0.8));
-    padding: 1rem;
+    background: linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0.4));
+    padding: 1.5rem 1rem;
     color: white;
 `
 
 export const CityName = styled.h3`
     font-size: 1.25rem;
-    font-weight: 600:
+    font-weight: 600;
     margin-bottom: 0.25rem;
 `
 
 export const CountryName = styled.p`
     color: rgba(255, 255, 255, 0.9)
+    font-size: 0.875rem
 `

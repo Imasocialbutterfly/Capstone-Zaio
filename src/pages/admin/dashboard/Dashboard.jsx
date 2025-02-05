@@ -22,15 +22,15 @@ import {
 } from "./Dashboard.styled";
 import { GlobeIcon, Menu, Search } from "lucide-react";
 import Card from "../../../components/Card";
+import { experienceData, inspirationData } from "../../../utils/images";
+import Experiences from "../../../components/Experiences";
+import { ExperienceColumns } from "../../../components/Experiences.styled";
+import GiftCards from "../../../components/GiftCards";
+import HostingQuestions from "../../../components/HostingQuestions";
+import FutureGetaways from "../../../components/FutureGetaways";
+import FooterSection from "../../../components/FooterSection";
 
 const Dashboard = () => {
-  const inspirationData = [
-    { city: "Paris", country: "France" },
-    { city: "New York", country: "USA" },
-    { city: "Tokyo", country: "Japan" },
-    { city: "Cape Town", country: "South Africa" },
-    { city: "Phuket", country: "Thailand" },
-  ];
   return (
     <DashboardContainer>
       <Header>
@@ -87,19 +87,28 @@ const Dashboard = () => {
         <SectionHeading>Inspiration for your next trip</SectionHeading>
         <InspirationGrid>
           {inspirationData.map((item, index) => (
-            <Card 
+            <Card
               key={index}
               city={item.city}
               country={item.country}
-              imageUrl={`/api/placeholder/400/300?city=${item.city}`}
+              imageUrl={item.imageUrl}
             />
           ))}
         </InspirationGrid>
 
         <DiscoverSection>
           <SectionHeading>Discover Airbnb Experiences</SectionHeading>
+          <ExperienceColumns>
+            <Experiences data={experienceData.trip} />
+            <Experiences data={experienceData.home} />
+          </ExperienceColumns>
         </DiscoverSection>
+        <GiftCards imageUrl="https://cdn.images.express.co.uk/img/dynamic/25/590x/secondary/Airbnb-3906241.jpg?r=1644406120862" />
+        <HostingQuestions backgroundImage="https://images.unsplash.com/photo-1737452072725-0fcbd8133f82?q=80&w=871&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" />
+        <FutureGetaways />
       </ContentSection>
+
+      <FooterSection />
     </DashboardContainer>
   );
 };
