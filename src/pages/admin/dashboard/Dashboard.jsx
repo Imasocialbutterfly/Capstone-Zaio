@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   DashboardContainer,
   Header,
@@ -19,18 +19,42 @@ import {
   SectionHeading,
   InspirationGrid,
   DiscoverSection,
+  DropdownMenu,
+  MenuItem,
+  MenuSeparator,
 } from "./Dashboard.styled";
 import { GlobeIcon, Menu, Search } from "lucide-react";
-import Card from "../../../components/Card";
+import Card from "../../../components/dashboard/Card";
 import { experienceData, inspirationData } from "../../../utils/images";
-import Experiences from "../../../components/Experiences";
-import { ExperienceColumns } from "../../../components/Experiences.styled";
-import GiftCards from "../../../components/GiftCards";
-import HostingQuestions from "../../../components/HostingQuestions";
-import FutureGetaways from "../../../components/FutureGetaways";
-import FooterSection from "../../../components/FooterSection";
+import Experiences from "../../../components/dashboard/Experiences";
+import { ExperienceColumns } from "../../../components/dashboard/Experiences.styled";
+import GiftCards from "../../../components/dashboard/GiftCards";
+import HostingQuestions from "../../../components/dashboard/HostingQuestions";
+import FutureGetaways from "../../../components/dashboard/FutureGetaways";
+import FooterSection from "../../../components/dashboard/FooterSection";
+import AuthModal from "../../auth/AuthModal";
 
 const Dashboard = () => {
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef(null);
+
+  const handleAuthSubmit = (credentials) => {
+    console.log("Auth credentials:", credentials);
+    setShowAuthModal(false);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowDropdown(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   return (
     <DashboardContainer>
       <Header>
@@ -48,14 +72,40 @@ const Dashboard = () => {
           <HeaderRight>
             <button>Become a host</button>
             <GlobeIcon />
-            <ProfileMenu>
-              <MenuButton>
+            <ProfileMenu ref={dropdownRef}>
+              <MenuButton onClick={() => setShowDropdown(!showDropdown)}>
                 <Menu />
               </MenuButton>
               <ProfileImage
+                onClick={() => setShowAuthModal(true)}
                 src="https://media.istockphoto.com/id/1495088043/vector/user-profile-icon-avatar-or-person-icon-profile-picture-portrait-symbol-default-portrait.jpg?s=612x612&w=0&k=20&c=dhV2p1JwmloBTOaGAtaA3AW1KSnjsdMt7-U_3EZElZ0="
                 alt="Profile"
               />
+
+              {showDropdown && (
+                <DropdownMenu>
+                  <MenuItem
+                    onClick={() => {
+                      setShowAuthModal(true);
+                      setShowDropdown(false);
+                    }}
+                  >
+                    Login
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() => {
+                      setShowAuthModal(true);
+                      setShowDropdown(false);
+                    }}
+                  >
+                    Sign up
+                  </MenuItem>
+                  <MenuSeparator />
+                  <MenuItem>Airbnb your home</MenuItem>
+                  <MenuItem>Host an experience</MenuItem>
+                  <MenuItem>Help Center</MenuItem>
+                </DropdownMenu>
+              )}
             </ProfileMenu>
           </HeaderRight>
         </HeaderContainer>
@@ -82,6 +132,12 @@ const Dashboard = () => {
           </SearchButton>
         </SearchBar>
       </Header>
+
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        onAuthSubmit={handleAuthSubmit}
+      />
       <BackgroundImg></BackgroundImg>
       <ContentSection>
         <SectionHeading>Inspiration for your next trip</SectionHeading>

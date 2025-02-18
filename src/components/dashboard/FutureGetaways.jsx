@@ -7,7 +7,8 @@ import {
   DestinationList,
   DestinationItem,
 } from "./FutureGetaways.styled";
-import { categoriesData } from "../utils/getawaysCategories";
+import { categoriesData } from "../../utils/getawaysCategories";
+
 
 const FutureGetaways = () => {
   const [activeCategory, setActiveCategory] = useState(

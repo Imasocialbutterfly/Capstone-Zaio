@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import Card from '../../../components/Card';
+import Card from '../../../components/dashboard/Card';
 
 export const DashboardContainer = styled.div`
     min-height: 100vh;
@@ -104,6 +104,36 @@ export const ProfileMenu = styled.div`
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 `
+
+export const DropdownMenu = styled.div`
+  position: absolute;
+  right: 0;
+  top: 50px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.12);
+  width: 240px;
+  padding: 8px 0;
+  z-index: 100;
+  margin-right: 20px;
+`;
+
+export const MenuItem = styled.div`
+  padding: 12px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  color: #222;
+  
+  &:hover {
+    background-color: #f7f7f7;
+  }
+`;
+
+export const MenuSeparator = styled.div`
+  height: 1px;
+  background-color: #ddd;
+  margin: 8px 0;
+`;
 
 export const SearchBar = styled.div`
     max-width: 850px;

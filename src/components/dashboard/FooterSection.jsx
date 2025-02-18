@@ -6,7 +6,8 @@ import {
   FooterHeading,
   FooterLink,
 } from "./FooterSection.styled";
-import { footerLinks } from "../utils/footerLinks";
+import { footerLinks } from "../../utils/footerLinks";
+
 
 const FooterSection = () => {
   return (
