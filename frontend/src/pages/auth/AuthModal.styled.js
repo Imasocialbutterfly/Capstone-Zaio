@@ -164,3 +164,51 @@ export const SocialButton = styled.button`
     background: #f7f7f7;
   }
 `
+
+export const ToggleMode = styled.div`
+  text-align: center;
+  color: ${({ theme }) => theme.colors.primary};
+  font-weight: 500;
+  cursor: pointer;
+  margin: 1rem 0;
+
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
+export const ErrorMessage = styled.div`
+  color: #ff0000;
+  background: #ffe6e6;
+  padding: 0.8rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+`;
+
+export const InputField = styled.input`
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+
+  &:focus {
+    border-color: ${(props) => props.theme.colors.primary};
+  }
+`;
+
+export const LoadingSpinner = styled.div`
+  border: 3px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 3px solid #ff385c;
+  width: 20px;
+  height: 20px;
+  animation: spin 1s linear infinite;
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+`;

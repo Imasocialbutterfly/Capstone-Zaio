@@ -38,10 +38,49 @@ const Dashboard = () => {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef(null);
+  const [authError, setAuthError] = useState("");
+  const [authMode, setAuthMode] = useState("login");
+  const [currentUser, setCurrentUser] = useState(() => {
+    const savedUser = localStorage.getItem("user");
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
 
-  const handleAuthSubmit = (credentials) => {
-    console.log("Auth credentials:", credentials);
-    setShowAuthModal(false);
+  const resetAuthForm = () => {
+    setAuthError("");
+    setAuthMode("login");
+  };
+
+  const handleAuthSubmit = async (credentials) => {
+    try {
+      setAuthError("");
+      const endpoint = authMode === "login" ? "login" : "signup";
+      const response = await fetch(
+        `http://localhost:4000/api/users/${endpoint}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(credentials),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Authentication failed");
+      }
+
+      localStorage.setItem("user", JSON.stringify(data));
+      setCurrentUser(data);
+      setShowAuthModal(false);
+    } catch (error) {
+      setAuthError(error.message || "An error occurred");
+      console.error("Auth error:", error);
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    setCurrentUser(null);
   };
 
   useEffect(() => {
@@ -84,22 +123,36 @@ const Dashboard = () => {
 
               {showDropdown && (
                 <DropdownMenu>
-                  <MenuItem
-                    onClick={() => {
-                      setShowAuthModal(true);
-                      setShowDropdown(false);
-                    }}
-                  >
-                    Login
-                  </MenuItem>
-                  <MenuItem
-                    onClick={() => {
-                      setShowAuthModal(true);
-                      setShowDropdown(false);
-                    }}
-                  >
-                    Sign up
-                  </MenuItem>
+                  {currentUser ? (
+                    <>
+                      <MenuItem>Welcome, {currentUser.username}</MenuItem>
+                      <MenuItem onClick={handleLogout}>Log out</MenuItem>
+                      <MenuSeparator />
+                      <MenuItem>My Trips</MenuItem>
+                      <MenuItem>Saved Homes</MenuItem>
+                    </>
+                  ) : (
+                    <>
+                      <MenuItem
+                        onClick={() => {
+                          setAuthMode("login");
+                          setShowAuthModal(true);
+                          setShowDropdown(false);
+                        }}
+                      >
+                        Log in
+                      </MenuItem>
+                      <MenuItem
+                        onClick={() => {
+                          setAuthMode("signup");
+                          setShowAuthModal(true);
+                          setShowDropdown(false);
+                        }}
+                      >
+                        Sign up
+                      </MenuItem>
+                    </>
+                  )}
                   <MenuSeparator />
                   <MenuItem>Airbnb your home</MenuItem>
                   <MenuItem>Host an experience</MenuItem>
@@ -135,8 +188,14 @@ const Dashboard = () => {
 
       <AuthModal
         isOpen={showAuthModal}
-        onClose={() => setShowAuthModal(false)}
+        onClose={() => {
+          setShowAuthModal(false);
+          resetAuthForm();
+        }}
         onAuthSubmit={handleAuthSubmit}
+        mode={authMode}
+        setMode={setAuthMode}
+        error={authError}
       />
       <BackgroundImg></BackgroundImg>
       <ContentSection>
