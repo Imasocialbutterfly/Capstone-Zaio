@@ -129,6 +129,25 @@ export const MenuItem = styled.div`
   }
 `;
 
+export const HostBadge = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: linear-gradient(135deg, #FF385C, #FF6B6B);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+`;
+
+export const UpgradeButton = styled.div`
+  display: flex;
+  align-items: center;
+  color: #FF385C;
+  font-weight: 600;
+`;
+
 export const MenuSeparator = styled.div`
   height: 1px;
   background-color: #ddd;
@@ -146,33 +165,159 @@ export const SearchBar = styled.div`
     box-shadow: 0 1px 2px rgba(0,0,0,0.08);
 `
 
-export const SearchField = styled.div`
-    flex: 1;
-    padding: 0.5rem 1.5rem;
-    border-right: 1px solid #ddd;
-    
-    &:last-of-type {
-        border-right: none;
-    }
-    
-    label {
-        display: block;
-        font-size: 0.75rem;
-        font-weight: 600;
-        margin-bottom: 0.25rem;
-    }
+export const SearchBarContainer = styled.div`
+  position: relative;
+  max-width: 850px;
+  margin: 0 auto;
+`;
 
-    input {
-        border: none;
-        outline: none;
-        width: 100%;
-        font-size: 0.875rem;
-        
-        &::placeholder {
-            color: #717171;
-        }
+export const LocationDropdown = styled.div`
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.12);
+  padding: 8px 0;
+  z-index: 1000;
+  margin-top: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #ebebeb;
+`;
+
+export const LocationOption = styled.div`
+  padding: 12px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  color: #222;
+  
+  &:hover {
+    background-color: #f7f7f7;
+  }
+`;
+
+export const GuestsDropdown = styled.div`
+  position: absolute;
+  top: 100%;
+  right: 120px;
+  width: 300px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.12);
+  padding: 20px;
+  z-index: 1000;
+  margin-top: 8px;
+  border: 1px solid #ebebeb;
+`;
+
+export const GuestOption = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 0;
+  
+  &:not(:last-child) {
+    border-bottom: 1px solid #ebebeb;
+  }
+`;
+
+export const GuestLabel = styled.div`
+  display: flex;
+  flex-direction: column;
+  
+  span {
+    font-size: 12px;
+    color: #717171;
+    margin-top: 4px;
+  }
+`;
+
+export const GuestType = styled.span`
+  font-weight: 600;
+  color: #222;
+`;
+
+export const GuestCounter = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 16px;
+`;
+
+export const CounterButton = styled.button`
+  width: 32px;
+  height: 32px;
+  border: 1px solid #b0b0b0;
+  border-radius: 50%;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #b0b0b0;
+  
+  &:hover:not(:disabled) {
+    border-color: #222;
+    color: #222;
+  }
+  
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+`;
+
+export const CounterValue = styled.span`
+  font-size: 16px;
+  font-weight: 600;
+  min-width: 20px;
+  text-align: center;
+  color: #222;
+`;
+
+export const SearchField = styled.div`
+  flex: 1;
+  padding: 0.5rem 1.5rem;
+  border-right: 1px solid #ddd;
+  cursor: pointer;
+  position: relative;
+  
+  ${props => props.active && `
+    border-radius: 32px;
+    box-shadow: 0 0 0 2px #222;
+  `}
+  
+  &:first-of-type {
+    ${props => props.active && `
+      border-radius: 32px 0 0 32px;
+    `}
+  }
+  
+  &:last-of-type {
+    border-right: none;
+  }
+  
+  label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
+
+  input {
+    border: none;
+    outline: none;
+    width: 100%;
+    font-size: 0.875rem;
+    background: transparent;
+    cursor: pointer;
+    
+    &::placeholder {
+      color: #717171;
     }
-`
+  }
+`;
 
 export const SearchButton = styled.button`
     background: #FF385C;
