@@ -21,8 +21,20 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Password is required'],
         minlength: 6
+    },
+    role: {
+        type: String,
+        enum: ['user', 'host', 'admin'],
+        default: 'user'
+    },
+
+    profile: {
+        firstName: String,
+        lastName: String,
+        avatar: String,
+        bio: String
     }
-});
+}, { timestamps: true });
 
 userSchema.pre('save', async function (next) {
     if (!this.isModified('password')) return next();
@@ -36,7 +48,7 @@ userSchema.pre('save', async function (next) {
     }
 });
 
-userSchema.methods.comparePassword = async function(candidatePassword) {
+userSchema.methods.comparePassword = async function (candidatePassword) {
     return bcrypt.compare(candidatePassword, this.password);
 };
 

@@ -1,21 +1,13 @@
 import express from 'express';
+import { creatListing, getListing, getListings, updateListing, deleteListing, createListing } from '../controllers/listingController'
+import { authenticate } from '../middleware/auth';
 
-const router = express.Router()
+const router = express.Router();
 
-router.get('/', (req, res) => {
-    res.json({msg: 'GET as single listing'})
-})
+router.post('/', getListings);
+router.get('/:id', getListing)
+router.post('/create', authenticate, createListing);
+router.put('/:id', authenticate, updateListing)
+router.delete('/:id', authenticate, deleteListing)
 
-router.post('/:id', (req, res) => {
-    res.json({msg: 'POST a new listing'})
-})
-
-router.delete('/:id', (req, res) => {
-    res.json({msg: 'DELETE a listing'})
-})
-
-router.patch('/:id', (req, res) => {
-    res.json({msg: 'UPDATE a listing'})
-})
-
-module.exports = router
+export default router
