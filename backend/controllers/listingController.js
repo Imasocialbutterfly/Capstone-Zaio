@@ -1,20 +1,76 @@
-import Listing from "../models/ListingModel";
+import Listing from "../models/ListingModel.js";
 
 export const createListing = async (req, res) => {
     try {
-        const lisitngData = {
+        console.log('Creating listing with data:', req.body);
+        console.log('User ID:', req.user._id);
+        
+        if (!req.user || !req.user._id) {
+            return res.status(401).json({ error: 'User not authenticated' });
+        }
+
+        const listingData = {
             ...req.body,
             host: req.user._id
         };
 
-        const listing = new Listing(lisitngData);
-        await listing.populate('host', 'username profile')
+        // Validate required fields
+        const requiredFields = ['title', 'description', 'address', 'price', 'propertyType', 'bedrooms', 'bathrooms', 'maxGuests'];
+        for (const field of requiredFields) {
+            if (!listingData[field]) {
+                return res.status(400).json({ error: `${field} is required` });
+            }
+        }
 
-        res.status(201).json(listing)
+        // Validate address fields
+        if (!listingData.address.street || !listingData.address.city || !listingData.address.country) {
+            return res.status(400).json({ error: 'Address must include street, city, and country' });
+        }
+
+        // Validate images
+        if (!listingData.images || listingData.images.length === 0) {
+            return res.status(400).json({ error: 'At least one image is required' });
+        }
+
+        // Convert string numbers to actual numbers
+        listingData.price = parseFloat(listingData.price);
+        listingData.bedrooms = parseInt(listingData.bedrooms);
+        listingData.bathrooms = parseInt(listingData.bathrooms);
+        listingData.maxGuests = parseInt(listingData.maxGuests);
+
+        // Validate numeric fields
+        if (isNaN(listingData.price) || listingData.price <= 0) {
+            return res.status(400).json({ error: 'Price must be a positive number' });
+        }
+
+        const listing = new Listing(listingData);
+        await listing.save();
+        
+        // Populate host info
+        await listing.populate('host', 'username email');
+        
+        console.log('Listing created successfully:', listing._id);
+        
+        res.status(201).json(listing);
     } catch (error) {
-        res.status(400).json({ error: error.message })
+        console.error('Error creating listing:', error);
+        
+        // Handle validation errors
+        if (error.name === 'ValidationError') {
+            const messages = Object.values(error.errors).map(val => val.message);
+            return res.status(400).json({ error: messages.join(', ') });
+        }
+        
+        // Handle duplicate key errors
+        if (error.code === 11000) {
+            return res.status(400).json({ error: 'Duplicate listing found' });
+        }
+        
+        res.status(500).json({ 
+            error: error.message || 'Failed to create listing' 
+        });
     }
-}
+};
 
 export const getListings = async (req, res) => {
     try {
@@ -28,11 +84,11 @@ export const getListings = async (req, res) => {
         if (minPrice || maxPrice) {
             filter.price = {};
             if (minPrice) filter.price.$gte = parseInt(minPrice);
-            if (maxPrice) filter.price.$lte = parseInt(maxPrice)
+            if (maxPrice) filter.price.$lte = parseInt(maxPrice);
         }
 
         const listings = await Listing.find(filter)
-            .populate('host', 'username profile')
+            .populate('host', 'username email')
             .limit(limit * 1)
             .skip((page - 1) * limit)
             .sort({ createdAt: -1 });
@@ -41,69 +97,97 @@ export const getListings = async (req, res) => {
 
         res.json({
             listings,
-            totalPages: Math.cell(total / limit),
-            cuurentPage: page,
+            totalPages: Math.ceil(total / limit),
+            currentPage: page,
             total
-        })
+        });
     } catch (error) {
-        res.status(500).json({ error: error.message })
+        console.error('Error fetching listings:', error);
+        res.status(500).json({ 
+            error: error.message || 'Failed to fetch listings' 
+        });
     }
 };
 
 export const getListing = async (req, res) => {
     try {
         const listing = await Listing.findById(req.params.id)
-            .populate('host', 'username profile')
+            .populate('host', 'username email');
 
         if (!listing) {
-            return res.status(404).json({ error: 'Listing not found' })
+            return res.status(404).json({ 
+                error: 'Listing not found' 
+            });
         }
 
-        res.json(listing)
+        res.json(listing);
     } catch (error) {
-        res.status(500).json({ error: error.message })
+        console.error('Error fetching listing:', error);
+        res.status(500).json({ 
+            error: error.message || 'Failed to fetch listing' 
+        });
     }
-}
+};
 
 export const updateListing = async (req, res) => {
     try {
-        const listing = await Listing.findById(req.params.id)
+        const listing = await Listing.findById(req.params.id);
 
         if (!listing) {
-            return res.status(404).json({ error: 'Listing not found' })
+            return res.status(404).json({ 
+                error: 'Listing not found' 
+            });
         }
 
+        // Check authorization
         if (listing.host.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
-            return res.status(403).json({ error: 'Unauthorized to update the listing' })
+            return res.status(403).json({ 
+                error: 'Unauthorized to update this listing' 
+            });
         }
 
         const updatedListing = await Listing.findByIdAndUpdate(
             req.params.id,
             req.body,
-            { new: true, runValidators: true }
-        ).populate('host', 'username profile')
+            { 
+                new: true, 
+                runValidators: true 
+            }
+        ).populate('host', 'username email');
 
-        res.json(updateListing)
+        res.json(updatedListing);
     } catch (error) {
-        res.status(400).json({ error: error.message })
+        console.error('Error updating listing:', error);
+        res.status(400).json({ 
+            error: error.message || 'Failed to update listing' 
+        });
     }
-}
+};
 
 export const deleteListing = async (req, res) => {
     try {
-        const listing = await Listing.findById(req.params.id)
+        const listing = await Listing.findById(req.params.id);
 
         if (!listing) {
-            return res.status(404).json({ error: 'Listing not found' })
+            return res.status(404).json({ 
+                error: 'Listing not found' 
+            });
         }
 
         if (listing.host.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
-            return res.status(403).json({ error: 'Unauthorized to delete the listing' })
+            return res.status(403).json({ 
+                error: 'Unauthorized to delete this listing' 
+            });
         }
 
-        await Listing.findByIdAndDelete(req.params.id)
-        res.json({ messgage: 'Listing deleted successfully' })
+        await Listing.findByIdAndDelete(req.params.id);
+        res.json({ 
+            message: 'Listing deleted successfully' 
+        });
     } catch (error) {
-        res.status(500).json({ error: error.message })
+        console.error('Error deleting listing:', error);
+        res.status(500).json({ 
+            error: error.message || 'Failed to delete listing' 
+        });
     }
-}
+};

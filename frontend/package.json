@@ -1,4 +1,4 @@
-  {
+{
   "name": "airbnb-zaio-fred",
   "version": "0.1.0",
   "private": true,
@@ -7,6 +7,7 @@
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "cra-template": "1.2.0",
+    "date-fns": "^4.1.0",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
@@ -14,6 +15,7 @@
     "mongodb": "^6.13.0",
     "mongoose": "^8.10.0",
     "react": "^18.2.0",
+    "react-datepicker": "^9.1.0",
     "react-dom": "^18.2.0",
     "react-router": "^6.21.1",
     "react-router-dom": "^6.29.0",
@@ -45,6 +47,7 @@
     ]
   },
   "devDependencies": {
-    "@types/bcryptjs": "^2.4.6"
+    "@types/bcryptjs": "^2.4.6",
+    "@types/react-datepicker": "^6.2.0"
   }
 }

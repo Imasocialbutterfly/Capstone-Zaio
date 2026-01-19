@@ -1,10 +1,10 @@
 import express from 'express';
-import { creatListing, getListing, getListings, updateListing, deleteListing, createListing } from '../controllers/listingController'
-import { authenticate } from '../middleware/auth';
+import { createListing, getListing, getListings, updateListing, deleteListing } from '../controllers/listingController.js'
+import { authenticate } from '../middleware/auth.js';
 
 const router = express.Router();
 
-router.post('/', getListings);
+router.get('/', getListings);
 router.get('/:id', getListing)
 router.post('/create', authenticate, createListing);
 router.put('/:id', authenticate, updateListing)

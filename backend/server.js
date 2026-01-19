@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import cors from 'cors'
 import userRoutes from './routes/userRoutes.js';
+import listingRoutes from './routes/listings.js';
 
 dotenv.config()
 
@@ -17,8 +18,9 @@ for (const envVar of requiredEnvVars) {
 const app = express();
 
 // middleware
-app.use(express.json());
+app.use(express.json({ limit: '10mb'}));
 app.use(cors({ origin: 'http://localhost:3000' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 app.use((req, res, next) => {
     console.log(`${new Date().toISOString()} - ${req.method} ${req.originalUrl}`);
@@ -31,9 +33,15 @@ app.get('/api/test', (req, res) => {
 
 // routes
 app.use('/api/users', userRoutes)
+app.use('/api/listings', listingRoutes)
 app.get('/', (req, res) => {
     res.json({ msg: "welcome to the app!!!" })
 })
+
+app.use((err, req, res, next) => {
+    console.error('Server error:', err);
+    res.status(500).json({ error: 'Internal server error' });
+});
 
 mongoose.connect(process.env.MONGODB_URL)
     .then(() => {

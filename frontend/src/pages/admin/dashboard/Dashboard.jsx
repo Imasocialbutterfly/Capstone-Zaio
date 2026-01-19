@@ -44,6 +44,10 @@ import {
   Plus,
   Minus,
 } from "lucide-react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { addDays } from "date-fns";
+import { useNavigate } from 'react-router-dom';
 import Card from "../../../components/dashboard/Card";
 import { experienceData, inspirationData } from "../../../utils/images";
 import Experiences from "../../../components/dashboard/Experiences";
@@ -55,6 +59,7 @@ import FooterSection from "../../../components/dashboard/FooterSection";
 import AuthModal from "../../auth/AuthModal";
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [showLocationDropdown, setShowLocationDropdown] = useState(false);
@@ -75,6 +80,12 @@ const Dashboard = () => {
     const savedUser = localStorage.getItem("user");
     return savedUser ? JSON.parse(savedUser) : null;
   });
+  const [checkInDate, setCheckInDate] = useState(null);
+  const [checkOutDate, setCheckOutDate] = useState(null);
+  const [showCheckInCalendar, setShowCheckInCalendar] = useState(false);
+  const [showCheckOutCalendar, setShowCheckOutCalendar] = useState(false);
+  const checkInRef = useRef(null);
+  const checkOutRef = useRef(null);
 
   const locations = ["New York", "Paris", "Tokyo", "Cape Town", "Phuket"];
 
@@ -210,11 +221,52 @@ const Dashboard = () => {
       ) {
         setShowGuestsDropdown(false);
       }
+      if (
+        checkInRef.current &&
+        !checkInRef.current.contains(event.target) &&
+        !event.target.closest(".react-datepicker")
+      ) {
+        setShowCheckInCalendar(false);
+      }
+      if (
+        checkOutRef.current &&
+        !checkOutRef.current.contains(event.target) &&
+        !event.target.closest(".react-datepicker")
+      ) {
+        setShowCheckOutCalendar(false);
+      }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  const handleCheckInClick = () => {
+    setShowCheckInCalendar(true);
+    setShowCheckOutCalendar(false);
+    setShowLocationDropdown(false);
+    setShowGuestsDropdown(false);
+  };
+  const handleCheckOutClick = () => {
+    setShowCheckOutCalendar(true);
+    setShowCheckInCalendar(false);
+    setShowLocationDropdown(false);
+    setShowGuestsDropdown(false);
+  };
+
+  const handleCheckInChange = (date) => {
+    setCheckInDate(date);
+    setShowCheckInCalendar(false);
+
+    if (checkOutDate && date < date) {
+      setCheckOutDate(null);
+    }
+  };
+
+  const handleCheckOutChange = (date) => {
+    setCheckOutDate(date);
+    setShowCheckOutCalendar(false);
+  };
 
   return (
     <DashboardContainer>
@@ -237,7 +289,13 @@ const Dashboard = () => {
                 Host
               </HostBadge>
             )}
-            <button>
+            <button onClick={() => {
+              if (currentUser?.role === "host") {
+                navigate('/manage-listings')
+              } else {
+                handleBecomeHost()
+              }
+            }}>
               {currentUser?.role === "host"
                 ? "Host Dashboard"
                 : "Become a host"}
@@ -281,7 +339,7 @@ const Dashboard = () => {
                       <MenuSeparator />
                       {currentUser.role === "host" ? (
                         <>
-                          <MenuItem>
+                          <MenuItem onClick={() => navigate('/manage-listings')}>
                             <Home size={16} style={{ marginRight: "8px" }} />
                             Manage Listings
                           </MenuItem>
@@ -337,6 +395,7 @@ const Dashboard = () => {
               ref={searchFieldRef}
               onClick={handleLocationClick}
               active={showLocationDropdown}
+              style={{ width: "25%" }}
             >
               <label>Location</label>
               <input
@@ -346,18 +405,83 @@ const Dashboard = () => {
                 readOnly
               />
             </SearchField>
-            <SearchField>
+            <SearchField
+              ref={checkInRef}
+              onClick={handleCheckInClick}
+              active={showCheckInCalendar}
+              style={{ width: "20%", position: "relative" }}
+            >
               <label>Check In</label>
-              <input type="text" placeholder="Add Dates" />
+              <input
+                type="text"
+                placeholder="Add Dates"
+                value={checkInDate ? checkInDate.toLocaleDateString() : ""}
+                readOnly
+              />
+              {showCheckInCalendar && (
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "100%",
+                    left: 0,
+                    zIndex: 1000,
+                    backgroundColor: "white",
+                    borderRadius: "8px",
+                    boxShadow: "0 2px 16px rgba(0,0,0,0.15)",
+                  }}
+                >
+                  <DatePicker
+                    selected={checkInDate}
+                    onChange={handleCheckInChange}
+                    inline
+                    minDate={new Date()}
+                    maxDate={checkOutDate || addDays(new Date(), 90)}
+                    calendarStartDay={1}
+                  />
+                </div>
+              )}
             </SearchField>
-            <SearchField>
+            <SearchField
+              ref={checkOutRef}
+              onClick={handleCheckOutClick}
+              active={showCheckOutCalendar}
+              style={{ width: "20%", position: "relative" }}
+            >
               <label>Check Out</label>
-              <input type="text" placeholder="Add Dates" />
+              <input
+                type="text"
+                placeholder="Add Dates"
+                value={checkOutDate ? checkOutDate.toLocaleDateString() : ""}
+                readOnly
+              />
+              {showCheckOutCalendar && (
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "100%",
+                    left: 0,
+                    zIndex: 1000,
+                    backgroundColor: "white",
+                    borderRadius: "8px",
+                    boxShadow: "0 2px 16px rgba(0,0,0,0.15)",
+                  }}
+                >
+                  <DatePicker
+                    selected={checkOutDate}
+                    onChange={handleCheckOutChange}
+                    inline
+                    minDate={checkInDate || new Date()}
+                    maxDate={addDays(checkInDate || new Date(), 90)}
+                    calendarStartDay={1}
+                  />
+                </div>
+              )}
             </SearchField>
             <SearchField
               ref={guestsFieldRef}
               onClick={handleGuestsClick}
               active={showGuestsDropdown}
+              style={{ width: "20%" }}
             >
               <label>Guests</label>
               <input
