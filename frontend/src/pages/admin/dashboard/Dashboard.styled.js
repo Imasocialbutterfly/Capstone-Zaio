@@ -3,19 +3,22 @@ import Card from '../../../components/dashboard/Card';
 
 export const DashboardContainer = styled.div`
     min-height: 100vh;
-    background-color: #fff;
+    position: relative;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
 `;
 
 export const Header = styled.header`
-    background: white;
-    border-bottom: 1px solid #ebebeb;
+    background: transparent;
+    border-bottom: 1px solid #080505;
     padding-bottom: 1rem;
 `
 
 export const HeaderContainer = styled.div`
     max-width: 1760px;
     margin: 0 auto;
-    padding: 1rem 5rem;
+    padding: 1rem 2rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -358,9 +361,18 @@ export const BackgroundImg = styled.div`
     width: 100%;
 `
 
+export const BlackBackground = styled.div`
+  background-color: #000;
+  position: relative;
+  z-index: 1;
+  
+`;
+
 export const ContentSection = styled.div`
     padding: 2rem 6%;
     background white;
+    position: relative;
+    z-index: 2;
 `
 
 export const SectionHeading = styled.h1`
