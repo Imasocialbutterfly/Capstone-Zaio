@@ -1,68 +1,83 @@
 import styled from 'styled-components';
 
 export const PageHeader = styled.header`
+  position: sticky;
+  top: 0;
+  z-index: 1000;
   background: white;
   border-bottom: 1px solid #ebebeb;
-  padding: 1rem 0;
 `;
 
 export const HeaderContainer = styled.div`
-  max-width: 1760px;
+  max-width: 1280px;
+  height: 80px;
   margin: 0 auto;
-  padding: 0 5rem;
+  padding: 0 40px;
+
   display: flex;
   justify-content: space-between;
   align-items: center;
 `;
 
 export const Logo = styled.img`
-  height: 2rem;
+  height: 32px;
   cursor: pointer;
-  transition: opacity 0.2s;
-  
-  &:hover {
-    opacity: 0.8;
-  }
 `;
 
-export const ProfileMenu = styled.div`
+export const HeaderRight = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 16px;
+`;
+
+export const IconButton = styled.button`
+  border: none;
+  background: transparent;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+
   display: flex;
   align-items: center;
-  padding: 0.2rem;
-  border: 1px solid #ddd;
-  border-radius: 50px;
+  justify-content: center;
+
   cursor: pointer;
-  
+
   &:hover {
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    background: #f7f7f7;
   }
 `;
 
-export const ProfileImage = styled.img`
-  width: 35px;
-  height: 35px;
-  border-radius: 50%;
-  margin-right: 0.5rem;
-`;
+export const ProfileMenu = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 10px;
 
-export const MenuButton = styled.button`
-  background: none;
-  border: none;
-  color: #717171;
+  border: 1px solid #dddddd;
+  border-radius: 999px;
+
+  padding: 8px 12px;
+
+  background: white;
+
   cursor: pointer;
+
+  &:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
 `;
 
 export const DropdownMenu = styled.div`
   position: absolute;
-  right: 0;
-  top: 50px;
+  right: 40px;
+  top: 70px;
   background: white;
   border-radius: 12px;
   box-shadow: 0 2px 16px rgba(0, 0, 0, 0.12);
   width: 240px;
   padding: 8px 0;
   z-index: 100;
-  margin-right: 20px;
 `;
 
 export const MenuItem = styled.div`
@@ -70,7 +85,7 @@ export const MenuItem = styled.div`
   font-size: 14px;
   cursor: pointer;
   color: #222;
-  
+
   &:hover {
     background-color: #f7f7f7;
   }
@@ -310,5 +325,20 @@ export const StyledSearchBar = styled.div`
       outline: none;
       border-color: #222;
     }
+  }
+`;
+
+export const LoadingSpinner = styled.div`
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #ff5a5f;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  animation: spin 1s linear infinite;
+  margin: 4rem auto;
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
   }
 `;

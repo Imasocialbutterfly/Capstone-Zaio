@@ -1,4 +1,5 @@
 import Listing from "../models/ListingModel.js";
+import Reservation from '../models/ReservationModel.js';
 
 export const createListing = async (req, res) => {
     try {
@@ -187,6 +188,21 @@ export const updateListing = async (req, res) => {
         });
     }
 };
+
+export const getBookedDates = async (req, res) => {
+    try {
+        const reservations = await Reservation.find({
+            listingId: req.params.id,
+            status: { $ne: "cancelled"},
+        });
+
+        res.json(reservations);
+    } catch (error) {
+        res.status(500).json({
+            error: error.message,
+        })
+    }
+}
 
 export const deleteListing = async (req, res) => {
     try {

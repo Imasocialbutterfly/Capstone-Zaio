@@ -10,71 +10,89 @@ export const DashboardContainer = styled.div`
 `;
 
 export const Header = styled.header`
-    background: transparent;
-    border-bottom: 1px solid #080505;
-    padding-bottom: 1rem;
-`
+  background: transparent;
+  padding-top: 24px;
+  padding-bottom: 40px;
+`;
 
 export const HeaderContainer = styled.div`
-    max-width: 1760px;
-    margin: 0 auto;
-    padding: 1rem 2rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-`
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 40px;
+
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center
+`;
 
 export const HeaderLeft = styled.div`
     flex: 0 0 auto;
 `
 
-export const HeaderCenter = styled.nav`
-    display: flex;
-    gap: 2rem;
-    justify-content: center;
-`
+export const HeaderCenter = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+`;
 
-export const NavItem = styled.a`
-    color: #222222;
-    text-decoration: none;
-    position: relative;
-    padding: 0.5rem 0;
-    cursor: pointer;
-    
-    &::after {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        width: ${props => props.active ? '60%' : '0'};
-        height: 2px;
-        background-color: #222;
-        transition: width 0.3s ease;
-    }
-    
-    &:hover::after {
-        width: 60%;
-    }
-`
+export const HeaderTopSection = styled.div`
+  max-width: 1280px;
+  margin: 0 auto;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+`;
+
+export const NavItem = styled.div`
+  color: white;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+
+  opacity: ${(props) => (props.$active ? 1 : 0.75)};
+
+  position: relative;
+  padding-bottom: 12px;
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+
+    transform: translateX(-50%);
+
+    width: ${(props) => (props.$active ? "100%" : "0")};
+
+    height: 2px;
+    background: white;
+
+    transition: all 0.2s ease;
+  }
+
+  &:hover {
+    opacity: 1;
+  }
+
+  &:hover::after {
+    width: 100%;
+  }
+`;
+
 
 export const HeaderRight = styled.div`
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 16px;
 
-    button {
-        background: transparent;
-        border: none;
-        padding: 0.5rem 1rem;
-        border-radius: 50px;
-        cursor: pointer;
-
-        &:hover {
-            background: #f7f7f7;
-        }
-    }
-`
+  button {
+    color: white;
+  }
+`;
 
 export const Logo = styled.img`
     height: 2rem;
@@ -158,20 +176,25 @@ export const MenuSeparator = styled.div`
 `;
 
 export const SearchBar = styled.div`
-    max-width: 850px;
-    margin: 0 auto;
-    display: flex;
-    background: white;
-    border: 1px solid #ddd;
-    border-radius: 50px;
-    padding: 0.5rem;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.08);
-`
+  display: flex;
+  align-items: center;
+
+  background: white;
+
+  border-radius: 999px;
+
+  padding: 8px;
+
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.08),
+    0 8px 28px rgba(0, 0, 0, 0.12);
+`;
 
 export const SearchBarContainer = styled.div`
   position: relative;
   max-width: 850px;
-  margin: 0 auto;
+  margin: 20px auto 0;
+  position: relative;
 `;
 
 export const LocationDropdown = styled.div`
@@ -281,63 +304,71 @@ export const CounterValue = styled.span`
 
 export const SearchField = styled.div`
   flex: 1;
-  padding: 0.5rem 1.5rem;
-  border-right: 1px solid #ddd;
+
+  padding: 14px 24px;
+
+  border-right: 1px solid #dddddd;
+
   cursor: pointer;
-  position: relative;
-  
-  ${props => props.active && `
+
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #f7f7f7;
     border-radius: 32px;
-    box-shadow: 0 0 0 2px #222;
-  `}
-  
-  &:first-of-type {
-    ${props => props.active && `
-      border-radius: 32px 0 0 32px;
-    `}
   }
-  
+
   &:last-of-type {
     border-right: none;
   }
-  
+
   label {
     display: block;
-    font-size: 0.75rem;
+    font-size: 12px;
     font-weight: 600;
-    margin-bottom: 0.25rem;
+    color: #222;
+    margin-bottom: 2px;
   }
 
   input {
     border: none;
     outline: none;
     width: 100%;
-    font-size: 0.875rem;
+
     background: transparent;
+
+    font-size: 14px;
+    color: #717171;
+
     cursor: pointer;
-    
-    &::placeholder {
-      color: #717171;
-    }
   }
 `;
 
 export const SearchButton = styled.button`
-    background: #FF385C;
-    border: none;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    margin-top: 0.42rem;
-    
-    &:hover {
-        background: #DE1162;
-    }
-`
+  width: 48px;
+  height: 48px;
+
+  border: none;
+  border-radius: 50%;
+
+  background: #ff385c;
+
+  color: white;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+
+  flex-shrink: 0;
+
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #e31c5f;
+  }
+`;
 
 export const ProfileImage = styled.img`
     width: 35px;
@@ -364,8 +395,7 @@ export const BackgroundImg = styled.div`
 export const BlackBackground = styled.div`
   background-color: #000;
   position: relative;
-  z-index: 1;
-  
+  min-height: 700px;
 `;
 
 export const ContentSection = styled.div`

@@ -1,42 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import airbnbLogo from '../../../assets/airbnb-logo.png';
-import {
-  DashboardContainer,
-  Header,
-  HeaderCenter,
-  HeaderContainer,
-  HeaderLeft,
-  HeaderRight,
-  Logo,
-  MenuButton,
-  NavItem,
-  ProfileImage,
-  ProfileMenu,
-  SearchBar,
-  SearchField,
-  SearchButton,
-  BackgroundImg,
-  ContentSection,
-  SectionHeading,
-  InspirationGrid,
-  DiscoverSection,
-  DropdownMenu,
-  MenuItem,
-  MenuSeparator,
-  HostBadge,
-  UpgradeButton,
-  LocationDropdown,
-  LocationOption,
-  SearchBarContainer,
-  GuestsDropdown,
-  GuestOption,
-  GuestCounter,
-  CounterButton,
-  CounterValue,
-  GuestLabel,
-  GuestType,
-  BlackBackground,
-} from "./Dashboard.styled";
+import airbnbLogo from "../../../assets/airbnb-logo.png";
+import * as S from "./Dashboard.styled";
 import {
   GlobeIcon,
   Menu,
@@ -49,7 +13,7 @@ import {
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { addDays } from "date-fns";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 import Card from "../../../components/dashboard/Card";
 import { experienceData, inspirationData } from "../../../utils/images";
 import Experiences from "../../../components/dashboard/Experiences";
@@ -89,7 +53,14 @@ const Dashboard = () => {
   const checkInRef = useRef(null);
   const checkOutRef = useRef(null);
 
-  const locations = ["All","New York", "Paris", "Tokyo", "Cape Town", "Phuket"];
+  const locations = [
+    "All",
+    "New York",
+    "Paris",
+    "Tokyo",
+    "Cape Town",
+    "Phuket",
+  ];
 
   const resetAuthForm = () => {
     setAuthError("");
@@ -107,7 +78,7 @@ const Dashboard = () => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(credentials),
-        }
+        },
       );
 
       const data = await response.json();
@@ -138,7 +109,7 @@ const Dashboard = () => {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-        }
+        },
       );
 
       const data = await response.json();
@@ -166,15 +137,15 @@ const Dashboard = () => {
   };
 
   const handleLocationSelect = (location) => {
-  if (location === "All") {
-    navigate('/locations');
-    setShowLocationDropdown(false);
-    return;
-  } else {
-    setSelectedLocation(location);
-    setShowLocationDropdown(false);
-  }
-};
+    if (location === "All") {
+      navigate("/locations");
+      setShowLocationDropdown(false);
+      return;
+    } else {
+      setSelectedLocation(location);
+      setShowLocationDropdown(false);
+    }
+  };
 
   const handleLocationClick = () => {
     setShowLocationDropdown(true);
@@ -277,297 +248,309 @@ const Dashboard = () => {
   };
 
   return (
-    <DashboardContainer>
-      <BlackBackground>
-      <Header>
-        <HeaderContainer>
-          <HeaderLeft>
-            <Logo src={airbnbLogo}/>
-          </HeaderLeft>
+    <S.DashboardContainer>
+      <S.BlackBackground>
+        <S.Header>
+          <S.HeaderContainer>
+            <S.HeaderLeft>
+              <S.Logo src={airbnbLogo} />
+            </S.HeaderLeft>
 
-          <HeaderCenter>
-            <NavItem active>Places to go</NavItem>
-            <NavItem>Experiences</NavItem>
-            <NavItem>Online Experiences</NavItem>
-          </HeaderCenter>
+              <S.HeaderCenter>
+                <S.NavItem $active>Places to go</S.NavItem>
+                <S.NavItem>Experiences</S.NavItem>
+                <S.NavItem>Online Experiences</S.NavItem>
+              </S.HeaderCenter>
+            {/* <S.HeaderTopSection>
+            </S.HeaderTopSection> */}
 
-          <HeaderRight>
-            {currentUser?.role === "host" && (
-              <HostBadge>
-                <Crown size={16} />
-                Host
-              </HostBadge>
-            )}
-            <button onClick={() => {
-              if (currentUser?.role === "host") {
-                navigate('/manage-listings')
-              } else {
-                handleBecomeHost()
-              }
-            }}>
-              {currentUser?.role === "host"
-                ? "Host Dashboard"
-                : "Become a host"}
-            </button>
-            <GlobeIcon />
-            <ProfileMenu ref={dropdownRef}>
-              <MenuButton onClick={() => setShowDropdown(!showDropdown)}>
-                <Menu />
-              </MenuButton>
-              <ProfileImage
-                onClick={() => setShowAuthModal(true)}
-                src="https://media.istockphoto.com/id/1495088043/vector/user-profile-icon-avatar-or-person-icon-profile-picture-portrait-symbol-default-portrait.jpg?s=612x612&w=0&k=20&c=dhV2p1JwmloBTOaGAtaA3AW1KSnjsdMt7-U_3EZElZ0="
-                alt="Profile"
-              />
+            <S.HeaderRight>
+              {currentUser?.role === "host" && (
+                <S.HostBadge>
+                  <Crown size={16} />
+                  Host
+                </S.HostBadge>
+              )}
+              <button
+                onClick={() => {
+                  if (currentUser?.role === "host") {
+                    navigate("/manage-listings");
+                  } else {
+                    handleBecomeHost();
+                  }
+                }}
+              >
+                {currentUser?.role === "host"
+                  ? "Host Dashboard"
+                  : "Become a host"}
+              </button>
+              <GlobeIcon />
+              <S.ProfileMenu ref={dropdownRef}>
+                <S.MenuButton onClick={() => setShowDropdown(!showDropdown)}>
+                  <Menu />
+                </S.MenuButton>
+                <S.ProfileImage
+                  onClick={() => setShowAuthModal(true)}
+                  src="https://media.istockphoto.com/id/1495088043/vector/user-profile-icon-avatar-or-person-icon-profile-picture-portrait-symbol-default-portrait.jpg?s=612x612&w=0&k=20&c=dhV2p1JwmloBTOaGAtaA3AW1KSnjsdMt7-U_3EZElZ0="
+                  alt="Profile"
+                />
 
-              {showDropdown && (
-                <DropdownMenu>
-                  {currentUser ? (
-                    <>
-                      <MenuItem>
-                        <strong>Welcome, {currentUser.username}!</strong>
-                        {currentUser.role === "host" && (
-                          <div
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: "4px",
-                              marginTop: "4px",
-                            }}
-                          >
-                            <Crown size={14} color="#FF385C" />
-                            <span
-                              style={{ color: "#FF385C", fontSize: "12px" }}
+                {showDropdown && (
+                  <S.DropdownMenu>
+                    {currentUser ? (
+                      <>
+                        <S.MenuItem>
+                          <strong>Welcome, {currentUser.username}!</strong>
+                          {currentUser.role === "host" && (
+                            <div
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "4px",
+                                marginTop: "4px",
+                              }}
                             >
-                              Verified Host
-                            </span>
-                          </div>
+                              <Crown size={14} color="#FF385C" />
+                              <span
+                                style={{ color: "#FF385C", fontSize: "12px" }}
+                              >
+                                Verified Host
+                              </span>
+                            </div>
+                          )}
+                        </S.MenuItem>
+                        <S.MenuItem onClick={handleLogout}>Log out</S.MenuItem>
+                        <S.MenuSeparator />
+                        {currentUser.role === "host" ? (
+                          <>
+                            <S.MenuItem
+                              onClick={() => navigate("/manage-listings")}
+                            >
+                              <Home size={16} style={{ marginRight: "8px" }} />
+                              Manage Listings
+                            </S.MenuItem>
+                            <S.MenuItem>Host Calendar</S.MenuItem>
+                            <S.MenuItem>Earnings</S.MenuItem>
+                          </>
+                        ) : (
+                          <S.MenuItem onClick={handleBecomeHost}>
+                            <S.UpgradeButton>
+                              <Crown size={16} style={{ marginRight: "8px" }} />
+                              Become a Host
+                            </S.UpgradeButton>
+                          </S.MenuItem>
                         )}
-                      </MenuItem>
-                      <MenuItem onClick={handleLogout}>Log out</MenuItem>
-                      <MenuSeparator />
-                      {currentUser.role === "host" ? (
-                        <>
-                          <MenuItem onClick={() => navigate('/manage-listings')}>
-                            <Home size={16} style={{ marginRight: "8px" }} />
-                            Manage Listings
-                          </MenuItem>
-                          <MenuItem>Host Calendar</MenuItem>
-                          <MenuItem>Earnings</MenuItem>
-                        </>
-                      ) : (
-                        <MenuItem onClick={handleBecomeHost}>
-                          <UpgradeButton>
-                            <Crown size={16} style={{ marginRight: "8px" }} />
-                            Become a Host
-                          </UpgradeButton>
-                        </MenuItem>
-                      )}
-                      <MenuItem>My Trips</MenuItem>
-                      <MenuItem>Saved Homes</MenuItem>
-                    </>
-                  ) : (
-                    <>
-                      <MenuItem
-                        onClick={() => {
-                          setAuthMode("login");
-                          setShowAuthModal(true);
-                          setShowDropdown(false);
-                        }}
-                      >
-                        Log in
-                      </MenuItem>
-                      <MenuItem
-                        onClick={() => {
-                          setAuthMode("signup");
-                          setShowAuthModal(true);
-                          setShowDropdown(false);
-                        }}
-                      >
-                        Sign up
-                      </MenuItem>
-                    </>
-                  )}
-                  <MenuSeparator />
-                  <MenuItem>Airbnb your home</MenuItem>
-                  <MenuItem>Host an experience</MenuItem>
-                  <MenuItem>Help Center</MenuItem>
-                </DropdownMenu>
-              )}
-            </ProfileMenu>
-          </HeaderRight>
-        </HeaderContainer>
+                        <S.MenuItem>My Trips</S.MenuItem>
+                        <S.MenuItem>Saved Homes</S.MenuItem>
+                      </>
+                    ) : (
+                      <>
+                        <S.MenuItem
+                          onClick={() => {
+                            setAuthMode("login");
+                            setShowAuthModal(true);
+                            setShowDropdown(false);
+                          }}
+                        >
+                          Log in
+                        </S.MenuItem>
+                        <S.MenuItem
+                          onClick={() => {
+                            setAuthMode("signup");
+                            setShowAuthModal(true);
+                            setShowDropdown(false);
+                          }}
+                        >
+                          Sign up
+                        </S.MenuItem>
+                      </>
+                    )}
+                    <S.MenuSeparator />
+                    <S.MenuItem>Airbnb your home</S.MenuItem>
+                    <S.MenuItem>Host an experience</S.MenuItem>
+                    <S.MenuItem>Help Center</S.MenuItem>
+                  </S.DropdownMenu>
+                )}
+              </S.ProfileMenu>
+            </S.HeaderRight>
+          </S.HeaderContainer>
 
-        <SearchBarContainer ref={locationDropdownRef}>
-          <SearchBar>
-            <SearchField
-              ref={searchFieldRef}
-              onClick={handleLocationClick}
-              active={showLocationDropdown}
-              style={{ width: "25%" }}
-            >
-              <label>Location</label>
-              <input
-                type="text"
-                placeholder={selectedLocation === "" ? "Any Location" : "Selected Location"}
-                value={selectedLocation === "" ? "Any Location" : selectedLocation}
-                readOnly
-              />
-            </SearchField>
-            <SearchField
-              ref={checkInRef}
-              onClick={handleCheckInClick}
-              active={showCheckInCalendar}
-              style={{ width: "20%", position: "relative" }}
-            >
-              <label>Check In</label>
-              <input
-                type="text"
-                placeholder="Add Dates"
-                value={checkInDate ? checkInDate.toLocaleDateString() : ""}
-                readOnly
-              />
-              {showCheckInCalendar && (
-                <div
-                  style={{
-                    position: "absolute",
-                    top: "100%",
-                    left: 0,
-                    zIndex: 1000,
-                    backgroundColor: "white",
-                    borderRadius: "8px",
-                    boxShadow: "0 2px 16px rgba(0,0,0,0.15)",
-                  }}
-                >
-                  <DatePicker
-                    selected={checkInDate}
-                    onChange={handleCheckInChange}
-                    inline
-                    minDate={new Date()}
-                    maxDate={checkOutDate || addDays(new Date(), 90)}
-                    calendarStartDay={1}
-                  />
-                </div>
-              )}
-            </SearchField>
-            <SearchField
-              ref={checkOutRef}
-              onClick={handleCheckOutClick}
-              active={showCheckOutCalendar}
-              style={{ width: "20%", position: "relative" }}
-            >
-              <label>Check Out</label>
-              <input
-                type="text"
-                placeholder="Add Dates"
-                value={checkOutDate ? checkOutDate.toLocaleDateString() : ""}
-                readOnly
-              />
-              {showCheckOutCalendar && (
-                <div
-                  style={{
-                    position: "absolute",
-                    top: "100%",
-                    left: 0,
-                    zIndex: 1000,
-                    backgroundColor: "white",
-                    borderRadius: "8px",
-                    boxShadow: "0 2px 16px rgba(0,0,0,0.15)",
-                  }}
-                >
-                  <DatePicker
-                    selected={checkOutDate}
-                    onChange={handleCheckOutChange}
-                    inline
-                    minDate={checkInDate || new Date()}
-                    maxDate={addDays(checkInDate || new Date(), 90)}
-                    calendarStartDay={1}
-                  />
-                </div>
-              )}
-            </SearchField>
-            <SearchField
-              ref={guestsFieldRef}
-              onClick={handleGuestsClick}
-              active={showGuestsDropdown}
-              style={{ width: "20%" }}
-            >
-              <label>Guests</label>
-              <input
-                type="text"
-                placeholder="Add Guests"
-                value={getGuestsText()}
-                readOnly
-              />
-            </SearchField>
-            <SearchButton>
-              <Search size={20} color="white" />
-            </SearchButton>
-          </SearchBar>
-
-          {showLocationDropdown && (
-            <LocationDropdown>
-              {locations.map((location) => (
-                <LocationOption
-                  key={location}
-                  onClick={() => handleLocationSelect(location)}
-                >
-                  {location}
-                </LocationOption>
-              ))}
-            </LocationDropdown>
-          )}
-
-          {showGuestsDropdown && (
-            <GuestsDropdown ref={guestsDropdownRef}>
-              <GuestOption>
-                <GuestLabel>
-                  <GuestType>Adults</GuestType>
-                  <span>Age 13+</span>
-                </GuestLabel>
-                <GuestCounter>
-                  <CounterButton
-                    onClick={() => handleGuestChange("adults", "decrease")}
-                    disabled={guests.adults === 0}
+          <S.SearchBarContainer ref={locationDropdownRef}>
+            <S.SearchBar>
+              <S.SearchField
+                ref={searchFieldRef}
+                onClick={handleLocationClick}
+                $active={showLocationDropdown}
+                style={{ width: "25%" }}
+              >
+                <label>Location</label>
+                <input
+                  type="text"
+                  placeholder={
+                    selectedLocation === ""
+                      ? "Any Location"
+                      : "Selected Location"
+                  }
+                  value={
+                    selectedLocation === "" ? "Any Location" : selectedLocation
+                  }
+                  readOnly
+                />
+              </S.SearchField>
+              <S.SearchField
+                ref={checkInRef}
+                onClick={handleCheckInClick}
+                $active={showCheckInCalendar}
+                style={{ width: "20%", position: "relative" }}
+              >
+                <label>Check In</label>
+                <input
+                  type="text"
+                  placeholder="Add Dates"
+                  value={checkInDate ? checkInDate.toLocaleDateString() : ""}
+                  readOnly
+                />
+                {showCheckInCalendar && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: "100%",
+                      left: 0,
+                      zIndex: 1000,
+                      backgroundColor: "white",
+                      borderRadius: "8px",
+                      boxShadow: "0 2px 16px rgba(0,0,0,0.15)",
+                    }}
                   >
-                    <Minus size={16} />
-                  </CounterButton>
-                  <CounterValue>{guests.adults}</CounterValue>
-                  <CounterButton
-                    onClick={() => handleGuestChange("adults", "increase")}
+                    <DatePicker
+                      selected={checkInDate}
+                      onChange={handleCheckInChange}
+                      inline
+                      minDate={new Date()}
+                      maxDate={checkOutDate || addDays(new Date(), 90)}
+                      calendarStartDay={1}
+                    />
+                  </div>
+                )}
+              </S.SearchField>
+              <S.SearchField
+                ref={checkOutRef}
+                onClick={handleCheckOutClick}
+                $active={showCheckOutCalendar}
+                style={{ width: "20%", position: "relative" }}
+              >
+                <label>Check Out</label>
+                <input
+                  type="text"
+                  placeholder="Add Dates"
+                  value={checkOutDate ? checkOutDate.toLocaleDateString() : ""}
+                  readOnly
+                />
+                {showCheckOutCalendar && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: "100%",
+                      left: 0,
+                      zIndex: 1000,
+                      backgroundColor: "white",
+                      borderRadius: "8px",
+                      boxShadow: "0 2px 16px rgba(0,0,0,0.15)",
+                    }}
                   >
-                    <Plus size={16} />
-                  </CounterButton>
-                </GuestCounter>
-              </GuestOption>
+                    <DatePicker
+                      selected={checkOutDate}
+                      onChange={handleCheckOutChange}
+                      inline
+                      minDate={checkInDate || new Date()}
+                      maxDate={addDays(checkInDate || new Date(), 90)}
+                      calendarStartDay={1}
+                    />
+                  </div>
+                )}
+              </S.SearchField>
+              <S.SearchField
+                ref={guestsFieldRef}
+                onClick={handleGuestsClick}
+                $active={showGuestsDropdown}
+                style={{ width: "20%" }}
+              >
+                <label>Guests</label>
+                <input
+                  type="text"
+                  placeholder="Add Guests"
+                  value={getGuestsText()}
+                  readOnly
+                />
+              </S.SearchField>
+              <S.SearchButton>
+                <Search size={20} color="white" />
+              </S.SearchButton>
+            </S.SearchBar>
 
-              <GuestOption>
-                <GuestLabel>
-                  <GuestType>Children</GuestType>
-                  <span>Ages 2-12</span>
-                </GuestLabel>
-                <GuestCounter>
-                  <CounterButton
-                    onClick={() => handleGuestChange("children", "decrease")}
-                    disabled={guests.children === 0}
+            {showLocationDropdown && (
+              <S.LocationDropdown>
+                {locations.map((location) => (
+                  <S.LocationOption
+                    key={location}
+                    onClick={() => handleLocationSelect(location)}
                   >
-                    <Minus size={16} />
-                  </CounterButton>
-                  <CounterValue>{guests.children}</CounterValue>
-                  <CounterButton
-                    onClick={() => handleGuestChange("children", "increase")}
-                  >
-                    <Plus size={16} />
-                  </CounterButton>
-                </GuestCounter>
-              </GuestOption>
-            </GuestsDropdown>
-          )}
-        </SearchBarContainer>
-      </Header>
+                    {location}
+                  </S.LocationOption>
+                ))}
+              </S.LocationDropdown>
+            )}
 
-      <BackgroundImg></BackgroundImg>
-      </BlackBackground>
+            {showGuestsDropdown && (
+              <S.GuestsDropdown ref={guestsDropdownRef}>
+                <S.GuestOption>
+                  <S.GuestLabel>
+                    <S.GuestType>Adults</S.GuestType>
+                    <span>Age 13+</span>
+                  </S.GuestLabel>
+                  <S.GuestCounter>
+                    <S.CounterButton
+                      onClick={() => handleGuestChange("adults", "decrease")}
+                      disabled={guests.adults === 0}
+                    >
+                      <Minus size={16} />
+                    </S.CounterButton>
+                    <S.CounterValue>{guests.adults}</S.CounterValue>
+                    <S.CounterButton
+                      onClick={() => handleGuestChange("adults", "increase")}
+                    >
+                      <Plus size={16} />
+                    </S.CounterButton>
+                  </S.GuestCounter>
+                </S.GuestOption>
+
+                <S.GuestOption>
+                  <S.GuestLabel>
+                    <S.GuestType>Children</S.GuestType>
+                    <span>Ages 2-12</span>
+                  </S.GuestLabel>
+                  <S.GuestCounter>
+                    <S.CounterButton
+                      onClick={() => handleGuestChange("children", "decrease")}
+                      disabled={guests.children === 0}
+                    >
+                      <Minus size={16} />
+                    </S.CounterButton>
+                    <S.CounterValue>{guests.children}</S.CounterValue>
+                    <S.CounterButton
+                      onClick={() => handleGuestChange("children", "increase")}
+                    >
+                      <Plus size={16} />
+                    </S.CounterButton>
+                  </S.GuestCounter>
+                </S.GuestOption>
+              </S.GuestsDropdown>
+            )}
+          </S.SearchBarContainer>
+        </S.Header>
+
+        <S.BackgroundImg></S.BackgroundImg>
+      </S.BlackBackground>
       <AuthModal
         isOpen={showAuthModal}
         onClose={() => {
@@ -579,9 +562,9 @@ const Dashboard = () => {
         setMode={setAuthMode}
         error={authError}
       />
-      <ContentSection>
-        <SectionHeading>Inspiration for your next trip</SectionHeading>
-        <InspirationGrid>
+      <S.ContentSection>
+        <S.SectionHeading>Inspiration for your next trip</S.SectionHeading>
+        <S.InspirationGrid>
           {inspirationData.map((item, index) => (
             <Card
               key={index}
@@ -590,15 +573,15 @@ const Dashboard = () => {
               imageUrl={item.imageUrl}
             />
           ))}
-        </InspirationGrid>
+        </S.InspirationGrid>
 
-        <DiscoverSection>
-          <SectionHeading>Discover Airbnb Experiences</SectionHeading>
+        <S.DiscoverSection>
+          <S.SectionHeading>Discover Airbnb Experiences</S.SectionHeading>
           <ExperienceColumns>
             <Experiences data={experienceData.trip} />
             <Experiences data={experienceData.home} />
           </ExperienceColumns>
-        </DiscoverSection>
+        </S.DiscoverSection>
 
         {currentUser?.role === "host" ? (
           <div
@@ -609,7 +592,7 @@ const Dashboard = () => {
               margin: "2rem 0",
             }}
           >
-            <SectionHeading>Host Dashboard</SectionHeading>
+            <S.SectionHeading>Host Dashboard</S.SectionHeading>
             <p>
               Welcome to your host dashboard! You can now create and manage
               listings.
@@ -637,7 +620,7 @@ const Dashboard = () => {
               margin: "2rem 0",
             }}
           >
-            <SectionHeading>Ready to become a host?</SectionHeading>
+            <S.SectionHeading>Ready to become a host?</S.SectionHeading>
             <p>
               Join our community of hosts and start earning money by sharing
               your space.
@@ -662,10 +645,10 @@ const Dashboard = () => {
         <GiftCards imageUrl="https://cdn.images.express.co.uk/img/dynamic/25/590x/secondary/Airbnb-3906241.jpg?r=1644406120862" />
         <HostingQuestions backgroundImage="https://images.unsplash.com/photo-1737452072725-0fcbd8133f82?q=80&w=871&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" />
         <FutureGetaways />
-      </ContentSection>
+      </S.ContentSection>
 
       <FooterSection />
-    </DashboardContainer>
+    </S.DashboardContainer>
   );
 };
 

@@ -1,52 +1,28 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Star, MapPin, Users, Bed, Bath, Menu } from 'lucide-react';
-import airbnbLogo from '../../assets/airbnb-logo.png'
+import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import {
-  LocationsContainer,
-  LocationsHeader,
-  SearchFilters,
-  FilterButton,
-  ListingsGrid,
-  ListingCard,
-  ListingImage,
-  ListingInfo,
-  ListingTitleHeader,
-  ListingTitle,
-  ListingRating,
-  ListingLocation,
-  ListingDetails,
-  ListingAmenities,
-  AmenityTag,
-  ListingFooter,
-  Price,
-  BookButton,
-  LoadMoreButton,
-  LoadingContainer,
-  ErrorMessage,
-  EmptyState,
-  StyledSearchBar,
-  PageHeader,
-  HeaderContainer,
-  Logo,
-  ProfileMenu,
-  ProfileImage,
-  MenuButton,
-  DropdownMenu,
-  MenuItem,
-  MenuSeparator
-} from './LocationsPage.styled';
+  Star,
+  MapPin,
+  Users,
+  Bed,
+  Bath,
+  Menu,
+  User,
+  Globe,
+} from "lucide-react";
+import airbnbLogo from "../../assets/airbnb-logo.png";
+import * as S from "./LocationsPage.styled";
 
 const LocationsPage = () => {
   const navigate = useNavigate();
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({
-    propertyType: 'all',
-    priceRange: 'all',
-    bedrooms: 'all'
+    propertyType: "all",
+    priceRange: "all",
+    bedrooms: "all",
   });
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef(null);
@@ -55,77 +31,87 @@ const LocationsPage = () => {
     return savedUser ? JSON.parse(savedUser) : null;
   });
 
-  const propertyTypes = ['All', 'Apartment', 'House', 'Condo', 'Villa', 'Cabin'];
-  const priceRanges = [
-    { label: 'All', value: 'all' },
-    { label: 'Under R1500', value: '0-1500' },
-    { label: 'R1500 - R3000', value: '1500-3000' },
-    { label: 'R3000 - R5000', value: '3000-5000' },
-    { label: 'Over R5000', value: '5000+' }
+  const propertyTypes = [
+    "All",
+    "Apartment",
+    "House",
+    "Condo",
+    "Villa",
+    "Cabin",
   ];
-  const bedroomOptions = ['All', '1', '2', '3', '4+'];
+  const priceRanges = [
+    { label: "All", value: "all" },
+    { label: "Under R1500", value: "0-1500" },
+    { label: "R1500 - R3000", value: "1500-3000" },
+    { label: "R3000 - R5000", value: "3000-5000" },
+    { label: "Over R5000", value: "5000+" },
+  ];
+  const bedroomOptions = ["All", "1", "2", "3", "4+"];
 
   useEffect(() => {
     fetchListings();
-    
+
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setShowDropdown(false);
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const fetchListings = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:4000/api/listings');
-      
+      const response = await fetch("http://localhost:4000/api/listings");
+
       if (!response.ok) {
-        throw new Error('Failed to fetch listings');
+        throw new Error("Failed to fetch listings");
       }
-      
+
       const data = await response.json();
       setListings(data.listings || []);
     } catch (err) {
       setError(err.message);
-      console.error('Error fetching listings:', err);
+      console.error("Error fetching listings:", err);
     } finally {
       setLoading(false);
     }
   };
 
-  const filteredListings = listings.filter(listing => {
+  const filteredListings = listings.filter((listing) => {
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
-      const matchesSearch = 
+      const matchesSearch =
         listing.title?.toLowerCase().includes(term) ||
         listing.description?.toLowerCase().includes(term) ||
         listing.address?.city?.toLowerCase().includes(term) ||
         listing.address?.country?.toLowerCase().includes(term);
-      
+
       if (!matchesSearch) return false;
     }
 
-    if (filters.propertyType !== 'all' && listing.propertyType !== filters.propertyType) {
+    if (
+      filters.propertyType !== "all" &&
+      listing.propertyType !== filters.propertyType
+    ) {
       return false;
     }
 
-    if (filters.priceRange !== 'all') {
+    if (filters.priceRange !== "all") {
       const price = listing.price;
-      const [min, max] = filters.priceRange.split('-');
-      
-      if (filters.priceRange === '5000+') {
+      const [min, max] = filters.priceRange.split("-");
+
+      if (filters.priceRange === "5000+") {
         if (price < 5000) return false;
       } else {
         if (price < parseInt(min) || price > parseInt(max)) return false;
       }
     }
 
-    if (filters.bedrooms !== 'all') {
-      if (filters.bedrooms === '4+') {
+    if (filters.bedrooms !== "all") {
+      if (filters.bedrooms === "4+") {
         if (listing.bedrooms < 4) return false;
       } else {
         if (listing.bedrooms !== parseInt(filters.bedrooms)) return false;
@@ -141,294 +127,311 @@ const LocationsPage = () => {
 
   const handleBookClick = (e, listingId) => {
     e.stopPropagation();
-    console.log('Book listing:', listingId);
+    console.log("Book listing:", listingId);
   };
 
   const handleLogoClick = () => {
-    navigate('/');
+    navigate("/");
   };
 
   const handleProfileClick = () => {
     if (currentUser) {
       setShowDropdown(!showDropdown);
     } else {
-      navigate('/auth');
+      navigate("/auth");
     }
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('user');
-    localStorage.removeItem('token');
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
     setCurrentUser(null);
     setShowDropdown(false);
   };
 
   if (loading) {
     return (
-      <LocationsContainer>
-        <LoadingContainer>Loading listings...</LoadingContainer>
-      </LocationsContainer>
+      <S.LocationsContainer>
+        <S.LoadingSpinner />
+      </S.LocationsContainer>
     );
   }
 
   if (error) {
     return (
-      <LocationsContainer>
-        <ErrorMessage>
+      <S.LocationsContainer>
+        <S.ErrorMessage>
           <p>Error loading listings: {error}</p>
           <button onClick={fetchListings}>Try Again</button>
-        </ErrorMessage>
-      </LocationsContainer>
+        </S.ErrorMessage>
+      </S.LocationsContainer>
     );
   }
 
   return (
     <div>
-      <PageHeader>
-        <HeaderContainer>
-          <Logo 
-            src={airbnbLogo} 
-            alt="Airbnb Logo" 
-            onClick={handleLogoClick}
-          />
-          <ProfileMenu ref={dropdownRef}>
-            <MenuButton onClick={() => setShowDropdown(!showDropdown)}>
-              <Menu />
-            </MenuButton>
-            <ProfileImage
-              src={currentUser?.profileImage || "https://media.istockphoto.com/id/1495088043/vector/user-profile-icon-avatar-or-person-icon-profile-picture-portrait-symbol-default-portrait.jpg?s=612x612&w=0&k=20&c=dhV2p1JwmloBTOaGAtaA3AW1KSnjsdMt7-U_3EZElZ0="}
-              alt="Profile"
-              onClick={handleProfileClick}
-            />
+      <S.PageHeader>
+        <S.HeaderContainer>
+          <S.Logo src={airbnbLogo} alt="Airbnb" onClick={() => navigate("/")} />
 
-            {showDropdown && (
-              <DropdownMenu>
-                {currentUser ? (
-                  <>
-                    <MenuItem>
-                      <strong>Welcome, {currentUser.username}!</strong>
-                      {currentUser.role === 'host' && (
-                        <div style={{ 
-                          display: 'flex', 
-                          alignItems: 'center', 
-                          gap: '4px', 
-                          marginTop: '4px',
-                          color: '#FF385C'
-                        }}>
-                          <span style={{ fontSize: '12px' }}>Verified Host</span>
-                        </div>
-                      )}
-                    </MenuItem>
-                    <MenuItem onClick={handleLogout}>Log out</MenuItem>
-                    <MenuSeparator />
-                    {currentUser.role === 'host' ? (
-                      <>
-                        <MenuItem onClick={() => navigate('/manage-listings')}>
-                          Manage Listings
-                        </MenuItem>
-                        <MenuItem>Host Dashboard</MenuItem>
-                      </>
-                    ) : null}
-                    <MenuItem>My Trips</MenuItem>
-                    <MenuItem>Saved Homes</MenuItem>
-                  </>
-                ) : (
-                  <>
-                    <MenuItem
-                      onClick={() => {
-                        navigate('/auth');
-                        setShowDropdown(false);
-                      }}
-                    >
-                      Log in
-                    </MenuItem>
-                    <MenuItem
-                      onClick={() => {
-                        navigate('/auth');
-                        setShowDropdown(false);
-                      }}
-                    >
-                      Sign up
-                    </MenuItem>
-                  </>
-                )}
-                <MenuSeparator />
-                <MenuItem>Airbnb your home</MenuItem>
-                <MenuItem>Host an experience</MenuItem>
-                <MenuItem>Help Center</MenuItem>
-              </DropdownMenu>
-            )}
-          </ProfileMenu>
-        </HeaderContainer>
-      </PageHeader>
+          <S.HeaderRight>
+            <S.IconButton>
+              <Globe size={18} />
+            </S.IconButton>
 
-      <LocationsContainer>
-        <LocationsHeader>
+            <div style={{ position: "relative" }}>
+              <S.ProfileMenu onClick={handleProfileClick}>
+                <Menu size={18} />
+                <User size={18} />
+              </S.ProfileMenu>
+
+              {showDropdown && (
+                <S.DropdownMenu>
+                  <S.MenuItem onClick={() => navigate("/trips")}>Trips</S.MenuItem>
+
+                  <S.MenuItem onClick={() => navigate("/wishlist")}>
+                    Wishlist
+                  </S.MenuItem>
+
+                  <S.MenuSeparator />
+
+                  <S.MenuItem onClick={handleLogout}>Logout</S.MenuItem>
+                </S.DropdownMenu>
+              )}
+            </div>
+          </S.HeaderRight>
+        </S.HeaderContainer>
+      </S.PageHeader>
+
+      <S.LocationsContainer>
+        <S.LocationsHeader>
           <h1>Find your next stay</h1>
           <p>Search low prices on hotels, homes and much more...</p>
-        </LocationsHeader>
+        </S.LocationsHeader>
 
-        <StyledSearchBar>
+        <S.StyledSearchBar>
           <input
             type="text"
             placeholder="Search by location, property type, or amenities..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-        </StyledSearchBar>
+        </S.StyledSearchBar>
 
-        <SearchFilters>
-          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-            <strong style={{ alignSelf: 'center' }}>Property Type:</strong>
-            {propertyTypes.map(type => (
-              <FilterButton
+        <S.SearchFilters>
+          <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+            <strong style={{ alignSelf: "center" }}>Property Type:</strong>
+            {propertyTypes.map((type) => (
+              <S.FilterButton
                 key={type}
-                className={filters.propertyType === type.toLowerCase() ? 'active' : ''}
-                onClick={() => setFilters(prev => ({
-                  ...prev,
-                  propertyType: type === 'All' ? 'all' : type.toLowerCase()
-                }))}
+                className={
+                  filters.propertyType === type.toLowerCase() ? "active" : ""
+                }
+                onClick={() =>
+                  setFilters((prev) => ({
+                    ...prev,
+                    propertyType: type === "All" ? "all" : type.toLowerCase(),
+                  }))
+                }
               >
                 {type}
-              </FilterButton>
+              </S.FilterButton>
             ))}
           </div>
 
-          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '0.5rem' }}>
-            <strong style={{ alignSelf: 'center' }}>Price Range:</strong>
-            {priceRanges.map(range => (
-              <FilterButton
+          <div
+            style={{
+              display: "flex",
+              gap: "0.5rem",
+              flexWrap: "wrap",
+              marginTop: "0.5rem",
+            }}
+          >
+            <strong style={{ alignSelf: "center" }}>Price Range:</strong>
+            {priceRanges.map((range) => (
+              <S.FilterButton
                 key={range.value}
-                className={filters.priceRange === range.value ? 'active' : ''}
-                onClick={() => setFilters(prev => ({ ...prev, priceRange: range.value }))}
+                className={filters.priceRange === range.value ? "active" : ""}
+                onClick={() =>
+                  setFilters((prev) => ({ ...prev, priceRange: range.value }))
+                }
               >
                 {range.label}
-              </FilterButton>
+              </S.FilterButton>
             ))}
           </div>
 
-          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '0.5rem' }}>
-            <strong style={{ alignSelf: 'center' }}>Bedrooms:</strong>
-            {bedroomOptions.map(beds => (
-              <FilterButton
+          <div
+            style={{
+              display: "flex",
+              gap: "0.5rem",
+              flexWrap: "wrap",
+              marginTop: "0.5rem",
+            }}
+          >
+            <strong style={{ alignSelf: "center" }}>Bedrooms:</strong>
+            {bedroomOptions.map((beds) => (
+              <S.FilterButton
                 key={beds}
-                className={filters.bedrooms === beds.toLowerCase() ? 'active' : ''}
-                onClick={() => setFilters(prev => ({ ...prev, bedrooms: beds === 'All' ? 'all' : beds }))}
+                className={
+                  filters.bedrooms === beds.toLowerCase() ? "active" : ""
+                }
+                onClick={() =>
+                  setFilters((prev) => ({
+                    ...prev,
+                    bedrooms: beds === "All" ? "all" : beds,
+                  }))
+                }
               >
                 {beds}
-              </FilterButton>
+              </S.FilterButton>
             ))}
           </div>
-        </SearchFilters>
+        </S.SearchFilters>
 
         {filteredListings.length === 0 ? (
-          <EmptyState>
+          <S.EmptyState>
             <h3>No listings found</h3>
             <p>Try adjusting your search or filters</p>
             <button
               onClick={() => {
-                setSearchTerm('');
-                setFilters({ propertyType: 'all', priceRange: 'all', bedrooms: 'all' });
+                setSearchTerm("");
+                setFilters({
+                  propertyType: "all",
+                  priceRange: "all",
+                  bedrooms: "all",
+                });
               }}
               style={{
-                padding: '0.75rem 1.5rem',
-                background: '#222',
-                color: 'white',
-                border: 'none',
-                borderRadius: '8px',
-                cursor: 'pointer'
+                padding: "0.75rem 1.5rem",
+                background: "#222",
+                color: "white",
+                border: "none",
+                borderRadius: "8px",
+                cursor: "pointer",
               }}
             >
               Clear all filters
             </button>
-          </EmptyState>
+          </S.EmptyState>
         ) : (
           <>
-            <p style={{ marginBottom: '1.5rem', color: '#717171' }}>
+            <p style={{ marginBottom: "1.5rem", color: "#717171" }}>
               Showing {filteredListings.length} of {listings.length} stays
             </p>
-            
-            <ListingsGrid>
+
+            <S.ListingsGrid>
               {filteredListings.map((listing) => (
-                <ListingCard
+                <S.ListingCard
                   key={listing._id}
                   onClick={() => handleListingClick(listing._id)}
                 >
-                  <ListingImage
-                    src={listing.images?.[0]?.url || 'https://via.placeholder.com/300x250'}
+                  <S.ListingImage
+                    src={
+                      listing.images?.[0]?.url ||
+                      "https://via.placeholder.com/300x250"
+                    }
                     alt={listing.title}
                     onError={(e) => {
-                      e.target.src = 'https://via.placeholder.com/300x250';
+                      e.target.src = "https://via.placeholder.com/300x250";
                     }}
                   />
-                  <ListingInfo>
-                    <ListingTitleHeader>
-                      <ListingTitle>{listing.title}</ListingTitle>
-                      <ListingRating>
+                  <S.ListingInfo>
+                    <S.ListingTitleHeader>
+                      <S.ListingTitle>{listing.title}</S.ListingTitle>
+                      <S.ListingRating>
                         <Star size={16} />
                         <span>4.5</span>
-                      </ListingRating>
-                    </ListingTitleHeader>
-                    
-                    <ListingLocation>
-                      <MapPin size={14} style={{ marginRight: '0.25rem' }} />
+                      </S.ListingRating>
+                    </S.ListingTitleHeader>
+
+                    <S.ListingLocation>
+                      <MapPin size={14} style={{ marginRight: "0.25rem" }} />
                       {listing.address?.city}, {listing.address?.country}
-                    </ListingLocation>
-                    
-                    <ListingDetails>
-                      <div style={{ display: 'flex', gap: '1rem', marginBottom: '0.5rem' }}>
-                        <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                    </S.ListingLocation>
+
+                    <S.ListingDetails>
+                      <div
+                        style={{
+                          display: "flex",
+                          gap: "1rem",
+                          marginBottom: "0.5rem",
+                        }}
+                      >
+                        <span
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "0.25rem",
+                          }}
+                        >
                           <Users size={14} />
                           {listing.maxGuests} guests
                         </span>
-                        <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                        <span
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "0.25rem",
+                          }}
+                        >
                           <Bed size={14} />
                           {listing.bedrooms} bedrooms
                         </span>
-                        <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                        <span
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "0.25rem",
+                          }}
+                        >
                           <Bath size={14} />
                           {listing.bathrooms} bathrooms
                         </span>
                       </div>
                       {listing.propertyType && (
-                        <div style={{ textTransform: 'capitalize' }}>
+                        <div style={{ textTransform: "capitalize" }}>
                           {listing.propertyType}
                         </div>
                       )}
-                    </ListingDetails>
-                    
+                    </S.ListingDetails>
+
                     {listing.amenities && listing.amenities.length > 0 && (
-                      <ListingAmenities>
+                      <S.ListingAmenities>
                         {listing.amenities.slice(0, 3).map((amenity, index) => (
-                          <AmenityTag key={index}>{amenity}</AmenityTag>
+                          <S.AmenityTag key={index}>{amenity}</S.AmenityTag>
                         ))}
                         {listing.amenities.length > 3 && (
-                          <AmenityTag>+{listing.amenities.length - 3} more</AmenityTag>
+                          <S.AmenityTag>
+                            +{listing.amenities.length - 3} more
+                          </S.AmenityTag>
                         )}
-                      </ListingAmenities>
+                      </S.ListingAmenities>
                     )}
-                    
-                    <ListingFooter>
-                      <Price>
+
+                    <S.ListingFooter>
+                      <S.Price>
                         R{listing.price} <span>/ night</span>
-                      </Price>
-                      <BookButton onClick={(e) => handleBookClick(e, listing._id)}>
+                      </S.Price>
+                      <S.BookButton
+                        onClick={(e) => handleBookClick(e, listing._id)}
+                      >
                         Book
-                      </BookButton>
-                    </ListingFooter>
-                  </ListingInfo>  
-                </ListingCard>
+                      </S.BookButton>
+                    </S.ListingFooter>
+                  </S.ListingInfo>
+                </S.ListingCard>
               ))}
-            </ListingsGrid>
-            
+            </S.ListingsGrid>
+
             {filteredListings.length < listings.length && (
-              <LoadMoreButton onClick={() => console.log('Load more clicked')}>
+              <S.LoadMoreButton onClick={() => console.log("Load more clicked")}>
                 Show more stays
-              </LoadMoreButton>
+              </S.LoadMoreButton>
             )}
           </>
         )}
-      </LocationsContainer>
+      </S.LocationsContainer>
     </div>
   );
 };
