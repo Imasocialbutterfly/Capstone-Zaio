@@ -23,6 +23,14 @@ import {
   Home,
   KeyRound,
   MapPin,
+  Sparkles,
+  MessageCircle,
+  MapPinned,
+  BadgeCheck,
+  Wallet,
+  DoorOpen,
+  ShieldCheck,
+  FileText,
 } from "lucide-react";
 
 const ReservationPage = () => {
@@ -208,6 +216,18 @@ const ReservationPage = () => {
 
       return date >= start && date <= end;
     });
+  };
+
+  const getDateStatus = (date) => {
+    const current = format(date, "yyyy-MM-dd");
+    const start = format(new Date(checkIn), "yyyy-MM-dd");
+    const end = format(new Date(checkOut), "yyyy-MM-dd");
+
+    return {
+      startEnd: current === start || current === end,
+
+      range: current > start && current < end,
+    };
   };
 
   const buildMonthCalendar = (monthDate) => {
@@ -418,21 +438,24 @@ const ReservationPage = () => {
 
                       const dateString = format(date, "yyyy-MM-dd");
 
-                      const selected =
-                        dateString >= checkIn && dateString <= checkOut;
+                      const { startEnd, range } = getDateStatus(date);
 
                       return (
                         <S.CalendarDay
                           key={index}
                           $booked={booked}
-                          $selected={selected}
+                          $startEnd={startEnd}
+                          $range={range}
                           disabled={booked}
                           onClick={() => {
                             if (booked) return;
 
-                            setCheckIn(dateString);
+                            const start = format(date, "yyyy-MM-dd");
 
-                            setCheckOut(format(addDays(date, 3), "yyyy-MM-dd"));
+                            const end = format(addDays(date, 3), "yyyy-MM-dd");
+
+                            setCheckIn(start);
+                            setCheckOut(end);
                           }}
                         >
                           {format(date, "d")}
@@ -467,21 +490,24 @@ const ReservationPage = () => {
 
                       const dateString = format(date, "yyyy-MM-dd");
 
-                      const selected =
-                        dateString >= checkIn && dateString <= checkOut;
+                      const { startEnd, range } = getDateStatus(date);
 
                       return (
                         <S.CalendarDay
                           key={index}
                           $booked={booked}
-                          $selected={selected}
+                          $startEnd={startEnd}
+                          $range={range}
                           disabled={booked}
                           onClick={() => {
                             if (booked) return;
 
-                            setCheckIn(dateString);
+                            const start = format(date, "yyyy-MM-dd");
 
-                            setCheckOut(format(addDays(date, 3), "yyyy-MM-dd"));
+                            const end = format(addDays(date, 3), "yyyy-MM-dd");
+
+                            setCheckIn(start);
+                            setCheckOut(end);
                           }}
                         >
                           {format(date, "d")}
@@ -492,18 +518,6 @@ const ReservationPage = () => {
                 </S.CalendarMonth>
               </S.CalendarMonths>
             </S.CalendarSection>
-
-            <S.ReviewsSection>
-              <S.SectionTitle>Guest reviews</S.SectionTitle>
-              <S.ReviewCard>
-                <S.ReviewerName>Kenyon</S.ReviewerName>
-                <S.ReviewRating>★★★★★</S.ReviewRating>
-                <S.ReviewText>
-                  "If we could have stayed for ever we would have. The garden
-                  and the atmosphere is absolutely incredible."
-                </S.ReviewText>
-              </S.ReviewCard>
-            </S.ReviewsSection>
           </S.LeftColumn>
 
           <S.RightColumn>
@@ -618,7 +632,352 @@ const ReservationPage = () => {
             </S.BookingCard>
           </S.RightColumn>
         </S.Content>
+
+        <S.ReviewsSection>
+          <S.ReviewSummary>
+            <S.ReviewMetric>
+              <Sparkles size={18} />
+              <span>Cleanliness</span>
+              <S.ProgressBar>
+                <S.ProgressFill width="95%" />
+              </S.ProgressBar>
+              <strong>4.9</strong>
+            </S.ReviewMetric>
+
+            <S.ReviewMetric>
+              <MessageCircle size={18} />
+              <span>Communication</span>
+              <S.ProgressBar>
+                <S.ProgressFill width="98%" />
+              </S.ProgressBar>
+              <strong>5.0</strong>
+            </S.ReviewMetric>
+
+            <S.ReviewMetric>
+              <DoorOpen size={18} />
+              <span>Check-in</span>
+              <S.ProgressBar>
+                <S.ProgressFill width="96%" />
+              </S.ProgressBar>
+              <strong>4.9</strong>
+            </S.ReviewMetric>
+
+            <S.ReviewMetric>
+              <BadgeCheck size={18} />
+              <span>Accuracy</span>
+              <S.ProgressBar>
+                <S.ProgressFill width="94%" />
+              </S.ProgressBar>
+              <strong>4.8</strong>
+            </S.ReviewMetric>
+
+            <S.ReviewMetric>
+              <MapPinned size={18} />
+              <span>Location</span>
+              <S.ProgressBar>
+                <S.ProgressFill width="97%" />
+              </S.ProgressBar>
+              <strong>4.9</strong>
+            </S.ReviewMetric>
+
+            <S.ReviewMetric>
+              <Wallet size={18} />
+              <span>Value</span>
+              <S.ProgressBar>
+                <S.ProgressFill width="92%" />
+              </S.ProgressBar>
+              <strong>4.8</strong>
+            </S.ReviewMetric>
+          </S.ReviewSummary>
+
+          <S.ReviewsGrid>
+            <S.ReviewCard>
+              <S.ReviewerHeader>
+                <S.ReviewerAvatar src="https://i.pravatar.cc/150?img=11" />
+
+                <div>
+                  <S.ReviewerName>Sarah</S.ReviewerName>
+
+                  <S.ReviewDate>March 2026</S.ReviewDate>
+                </div>
+              </S.ReviewerHeader>
+
+              <S.ReviewRating>★★★★</S.ReviewRating>
+
+              <S.ReviewText>
+                Beautiful property. Everything was spotless and exactly as
+                described. The host was responsive and check-in was effortless.
+              </S.ReviewText>
+            </S.ReviewCard>
+
+            <S.ReviewCard>
+              <S.ReviewerHeader>
+                <S.ReviewerAvatar src="https://i.pravatar.cc/150?img=23" />
+
+                <div>
+                  <S.ReviewerName>David</S.ReviewerName>
+
+                  <S.ReviewDate>January 2026</S.ReviewDate>
+                </div>
+              </S.ReviewerHeader>
+
+              <S.ReviewRating>★★★★★</S.ReviewRating>
+
+              <S.ReviewText>
+                Fantastic stay. The location is perfect and the apartment feels
+                much larger than the photos suggest.
+              </S.ReviewText>
+            </S.ReviewCard>
+
+            <S.ReviewCard>
+              <S.ReviewerHeader>
+                <S.ReviewerAvatar src="https://i.pravatar.cc/150?img=35" />
+
+                <div>
+                  <S.ReviewerName>Jessica</S.ReviewerName>
+
+                  <S.ReviewDate>December 2025</S.ReviewDate>
+                </div>
+              </S.ReviewerHeader>
+
+              <S.ReviewRating>★★★★★</S.ReviewRating>
+
+              <S.ReviewText>
+                We loved the place. Very clean, safe and close to everything we
+                needed. Would definitely book again.
+              </S.ReviewText>
+            </S.ReviewCard>
+
+            <S.ReviewCard>
+              <S.ReviewerHeader>
+                <S.ReviewerAvatar src="https://i.pravatar.cc/150?img=49" />
+
+                <div>
+                  <S.ReviewerName>Michael</S.ReviewerName>
+
+                  <S.ReviewDate>November 2025</S.ReviewDate>
+                </div>
+              </S.ReviewerHeader>
+
+              <S.ReviewRating>★★</S.ReviewRating>
+
+              <S.ReviewText>
+                Excellent communication from the host and an incredibly smooth
+                stay. Highly recommended.
+              </S.ReviewText>
+            </S.ReviewCard>
+          </S.ReviewsGrid>
+
+          <S.ShowAllReviewsButton>Show all reviews</S.ShowAllReviewsButton>
+        </S.ReviewsSection>
+
+        <S.HostProfileSection>
+          <S.HostProfileHeader>
+            <S.HostProfileAvatar
+              src={listing.host?.profile?.avatar || "/default-avatar.jpg"}
+              alt={listing.host?.username}
+            />
+
+            <div>
+              <S.HostProfileTitle>
+                Hosted by{" "}
+                {listing.host?.profile?.firstName || listing.host?.username}
+              </S.HostProfileTitle>
+
+              <S.HostProfileSubtitle>
+                Host since {new Date(listing.host?.createdAt).getFullYear()}
+              </S.HostProfileSubtitle>
+            </div>
+          </S.HostProfileHeader>
+
+          <S.HostStats>
+            <S.HostStat>
+              <strong>★ 4.95</strong>
+              <span>Rating</span>
+            </S.HostStat>
+
+            <S.HostStat>
+              <strong>98%</strong>
+              <span>Response rate</span>
+            </S.HostStat>
+
+            <S.HostStat>
+              <strong>1 hr</strong>
+              <span>Response time</span>
+            </S.HostStat>
+          </S.HostStats>
+
+          <S.HostBio>
+            {listing.host?.profile?.bio ||
+              `Hi, I'm ${
+                listing.host?.profile?.firstName || listing.host?.username
+              }. I enjoy welcoming guests and making sure they have a comfortable stay. Feel free to reach out if you have any questions about the property or surrounding area.`}
+          </S.HostBio>
+
+          <S.HostHighlights>
+            <div>✓ Superhost</div>
+            <div>✓ Experienced host</div>
+            <div>✓ Helps guests feel at home</div>
+          </S.HostHighlights>
+
+          <S.ContactHostButton>Contact Host</S.ContactHostButton>
+
+          <S.PaymentDisclaimerSection>
+            <S.DisclaimerIcon />
+            <span>
+              To protect your payment, never transfer money or communicate
+              outside of the Airbnb website or app.
+            </span>
+          </S.PaymentDisclaimerSection>
+        </S.HostProfileSection>
+
+        <S.WhatToKnowSection>
+          <S.WhatToKnowContent>
+            <S.WhatToKnowTitle>What to know</S.WhatToKnowTitle>
+
+            <S.WhatToKnowGrid>
+              <S.WhatToKnowColumn>
+                <S.WhatToKnowHeading>
+                  <Home size={18} />
+                  House rules
+                </S.WhatToKnowHeading>
+
+                <S.WhatToKnowItem>Check-in after 3:00 PM</S.WhatToKnowItem>
+
+                <S.WhatToKnowItem>Checkout before 11:00 AM</S.WhatToKnowItem>
+
+                <S.WhatToKnowItem>
+                  Maximum {listing.maxGuests} guests
+                </S.WhatToKnowItem>
+
+                {listing.rules?.slice(0, 3).map((rule, index) => (
+                  <S.WhatToKnowItem key={index}>{rule}</S.WhatToKnowItem>
+                ))}
+              </S.WhatToKnowColumn>
+
+              <S.WhatToKnowColumn>
+                <S.WhatToKnowHeading>
+                  <ShieldCheck size={18} />
+                  Safety & property
+                </S.WhatToKnowHeading>
+
+                <S.WhatToKnowItem>
+                  Carbon monoxide alarm not reported
+                </S.WhatToKnowItem>
+
+                <S.WhatToKnowItem>Smoke alarm not reported</S.WhatToKnowItem>
+
+                <S.WhatToKnowItem>
+                  Exterior security cameras may be present
+                </S.WhatToKnowItem>
+
+                <S.WhatToKnowItem>
+                  Property type: {listing.propertyType}
+                </S.WhatToKnowItem>
+              </S.WhatToKnowColumn>
+
+              <S.WhatToKnowColumn>
+                <S.WhatToKnowHeading>
+                  <FileText size={18} />
+                  Cancellation policy
+                </S.WhatToKnowHeading>
+
+                <S.WhatToKnowItem>
+                  Free cancellation for 48 hours.
+                </S.WhatToKnowItem>
+
+                <S.WhatToKnowItem>
+                  Review the full cancellation policy before booking.
+                </S.WhatToKnowItem>
+
+                <S.WhatToKnowItem>
+                  Reservation dates can be changed subject to availability.
+                </S.WhatToKnowItem>
+              </S.WhatToKnowColumn>
+            </S.WhatToKnowGrid>
+          </S.WhatToKnowContent>
+        </S.WhatToKnowSection>
       </S.Container>
+
+      <S.ExploreSection>
+        <S.ExploreContent>
+          <S.ExploreTitle>
+            Explore other options in {listing.location || "this area"}
+          </S.ExploreTitle>
+
+          <S.ExploreGrid>
+            <S.ExploreCard>
+              <h3>{listing.location || "Nearby"} homes</h3>
+              <p>Comfortable places to stay nearby</p>
+            </S.ExploreCard>
+
+            <S.ExploreCard>
+              <h3>Apartments in {listing.location || "your area"}</h3>
+              <p>Modern apartments and rentals</p>
+            </S.ExploreCard>
+
+            <S.ExploreCard>
+              <h3>Vacation rentals nearby</h3>
+              <p>Find unique stays and experiences</p>
+            </S.ExploreCard>
+
+            <S.ExploreCard>
+              <h3>Places to stay</h3>
+              <p>Discover more Airbnb listings</p>
+            </S.ExploreCard>
+          </S.ExploreGrid>
+        </S.ExploreContent>
+      </S.ExploreSection>
+
+      <S.FooterSection>
+        <S.FooterContent>
+          <S.FooterGrid>
+            <S.FooterColumn>
+              <h4>Support</h4>
+
+              <a href="/">Help Centre</a>
+              <a href="/">AirCover</a>
+              <a href="/">Anti-discrimination</a>
+              <a href="/">Disability support</a>
+              <a href="/">Cancellation options</a>
+              <a href="/">Report neighbourhood concern</a>
+            </S.FooterColumn>
+
+            <S.FooterColumn>
+              <h4>Community</h4>
+
+              <a href="/">Airbnb.org</a>
+              <a href="/">Support Afghan refugees</a>
+              <a href="/">Combating discrimination</a>
+              <a href="/">Diversity & belonging</a>
+            </S.FooterColumn>
+
+            <S.FooterColumn>
+              <h4>Hosting</h4>
+
+              <a href="/">Airbnb your home</a>
+              <a href="/">AirCover for Hosts</a>
+              <a href="/">Hosting resources</a>
+              <a href="/">Community forum</a>
+              <a href="/">Responsible hosting</a>
+            </S.FooterColumn>
+
+            <S.FooterColumn>
+              <h4>Airbnb</h4>
+
+              <a href="/">Newsroom</a>
+              <a href="/">New features</a>
+              <a href="/">Careers</a>
+              <a href="/">Investors</a>
+              <a href="/">Gift cards</a>
+            </S.FooterColumn>
+          </S.FooterGrid>
+
+          <S.FooterBottom>
+            © 2026 Airbnb, Inc. · Privacy · Terms · Sitemap
+          </S.FooterBottom>
+        </S.FooterContent>
+      </S.FooterSection>
     </>
   );
 };

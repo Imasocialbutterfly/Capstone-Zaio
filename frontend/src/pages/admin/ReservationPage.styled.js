@@ -1,9 +1,10 @@
 import styled from 'styled-components';
+import { ShieldCheck } from 'lucide-react';
 
 export const Container = styled.div`
   max-width: 1120px;
   margin: 0 auto;
-  padding: 2rem 1.5rem;
+  padding: 2rem 1.5rem 0;
   font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   color: #222222;
 `;
@@ -280,14 +281,15 @@ export const MonthTitle = styled.h3`
 
 export const WeekRow = styled.div`
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns:
+    repeat(7, minmax(30px,1fr));
   margin-bottom: 10px;
 
   span {
-    text-align: center;
-    font-size: 13px;
-    color: #717171;
-    font-weight: 600;
+    text-align:center;
+    font-size:12px;
+    color:#717171;
+    font-weight:600;
   }
 `;
 
@@ -299,6 +301,9 @@ export const CalendarSection = styled.div`
   margin-top: 48px;
   padding-top: 48px;
   border-top: 1px solid #ebebeb;
+
+  width: 100%;
+  overflow: hidden;
 `;
 
 export const CalendarHeader = styled.div`
@@ -316,33 +321,32 @@ export const CalendarHeader = styled.div`
 
 export const CalendarGrid = styled.div`
   display: grid;
-
-  grid-template-columns:
-    repeat(7, 1fr);
-
-  gap: 10px;
-
-  max-height: 700px;
-
-  overflow-y: auto;
+  grid-template-columns: repeat(7, minmax(30px, 1fr));
+  gap: 4px;
+  width: 100%;
 `;
 
 export const CalendarDay = styled.button`
-  height: 50px;
-
+  height: 38px;
+  width: 38px;
+  justify-self: center;
   border: none;
-
   border-radius: 50%;
+  position: relative;
 
-  background: ${({ $selected }) =>
-    $selected ? "#222" : "transparent"};
+  background: ${({ $startEnd, $range }) =>
+    $startEnd
+      ? "#222"
+      : $range
+        ? "#ebebeb"
+        : "transparent"};
 
-  color: ${({ $selected, $booked }) =>
-    $selected
+  color: ${({ $startEnd, $booked }) =>
+    $startEnd
       ? "#fff"
       : $booked
-      ? "#ccc"
-      : "#222"};
+        ? "#b0b0b0"
+        : "#222"};
 
   text-decoration: ${({ $booked }) =>
     $booked ? "line-through" : "none"};
@@ -350,26 +354,31 @@ export const CalendarDay = styled.button`
   cursor: ${({ $booked }) =>
     $booked ? "not-allowed" : "pointer"};
 
+  transition: 0.2s ease;
+  font-size: 14px;
+
   &:hover {
-    background: ${({ $selected, $booked }) =>
-      !$selected && !$booked
-        ? "#f7f7f7"
-        : undefined};
+    background: ${({ $booked }) =>
+    !$booked ? "#f7f7f7" : undefined};
   }
 `;
 
 export const CalendarMonths = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 48px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 32px;
+  width: 100%;
+  box-sizing: border-box;
 
-  @media (max-width: 900px) {
+  @media (max-width: 1100px) {
     grid-template-columns: 1fr;
   }
 `;
 
 export const CalendarMonth = styled.div`
   width: 100%;
+  min-width: 0;
+  overflow: hidden;
 `;
 
 export const MonthHeading = styled.h3`
@@ -382,14 +391,15 @@ export const MonthHeading = styled.h3`
 
 
 export const ReviewsSection = styled.div`
-  margin-top: 2rem;
+  width: 100%;
+  margin-top: 64px;
+  border-top: 1px solid #ebebeb;
+  padding-top: 48px;
 `;
 
 export const ReviewCard = styled.div`
-  background: #f7f7f7;
-  padding: 1rem;
-  border-radius: 12px;
-  margin-top: 1rem;
+  width: 100%;
+  box-sizing: border-box;
 `;
 
 export const ReviewerName = styled.div`
@@ -401,9 +411,97 @@ export const ReviewRating = styled.div`
   margin: 0.25rem 0;
 `;
 
+export const ReviewSummary = styled.div`
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px 64px;
+  margin-bottom: 64px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;}
+`;
+
+export const ReviewMetric = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  span {
+    min-width: 120px;
+    font-weight: 500;
+  }
+
+  strong {
+    min-width: 35px;
+  }
+`;
+
+export const ProgressBar = styled.div`
+  flex: 1;
+  height: 4px;
+  background: #e5e5e5;
+  border-radius: 999px;
+`;
+
+export const ProgressFill = styled.div`
+  width: ${({ width }) => width};
+  height: 100%;
+  background: #222;
+  border-radius: 999px;
+`;
+
+export const ReviewsGrid = styled.div`
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 40px 60px;
+  margin-top: 48px;
+
+  @media(max-width:768px){
+    grid-template-columns:1fr;
+  }
+
+`;
+
+export const ReviewerHeader = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+`;
+
+export const ReviewerAvatar = styled.img`
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+`;
+
+export const ReviewDate = styled.div`
+  color: #717171;
+  font-size: 14px;
+`;
+
 export const ReviewText = styled.p`
   font-size: 0.9rem;
   line-height: 1.4;
+`;
+
+export const ShowAllReviewsButton = styled.button`
+  margin-top: 40px;
+  padding: 14px 24px;
+  border: 1px solid #222;
+  border-radius: 8px;
+  background: white;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #f7f7f7;
+  }
 `;
 
 export const BookingCard = styled.div`
@@ -710,4 +808,272 @@ export const ProfileButton = styled.button`
   &:hover {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   }
+`;
+
+export const HostProfileSection = styled.section`
+  width: 100%;
+  margin-top: 64px;
+  padding-top: 48px;
+  border-top: 1px solid #ebebeb;
+`;
+
+export const HostProfileHeader = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 20px;
+`;
+
+export const HostProfileAvatar = styled.img`
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+`;
+
+export const HostProfileTitle = styled.h2`
+  margin: 0;
+  font-size: 32px;
+  font-weight: 600;
+`;
+
+export const HostProfileSubtitle = styled.p`
+  margin-top: 6px;
+  color: #717171;
+`;
+
+export const HostStats = styled.div`
+  display: flex;
+  gap: 48px;
+  margin: 32px 0;
+  flex-wrap: wrap;
+`;
+
+export const HostStat = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  strong {
+    font-size: 20px;
+  }
+
+  span {
+    color: #717171;
+    font-size: 14px;
+  }
+`;
+
+export const HostBio = styled.p`
+  max-width: 700px;
+  line-height: 1.6;
+  font-size: 16px;
+`;
+
+export const HostHighlights = styled.div`
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  div {
+    font-weight: 500;
+  }
+`;
+
+export const ContactHostButton = styled.button`
+  margin-top: 32px;
+  padding: 14px 24px;
+  border: 1px solid #222;
+  border-radius: 8px;
+  background: white;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover {
+    background: #f7f7f7;
+  }
+`;
+
+export const PaymentDisclaimerSection = styled.div`
+  margin-top: 32px;
+  padding-top: 24px;
+
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+
+  span {
+    font-size: 14px;
+    line-height: 1.5;
+    color: #717171;
+  }
+`;
+
+export const DisclaimerIcon = styled(ShieldCheck)`
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+`;
+
+export const WhatToKnowSection = styled.section`
+  border-top: 1px solid #ebebeb;
+  padding: 48px 0 24px;
+`;
+
+export const WhatToKnowContent = styled.div`
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 24px;
+`;
+
+export const WhatToKnowTitle = styled.h2`
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 40px;
+`;
+
+export const WhatToKnowGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 48px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+`;
+
+export const WhatToKnowColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+export const WhatToKnowHeading = styled.h3`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 20px;
+`;
+
+export const WhatToKnowItem = styled.div`
+  font-size: 14px;
+  line-height: 1.6;
+  color: #484848;
+  margin-bottom: 12px;
+`;
+
+export const ExploreSection = styled.section`
+  width: 100%;
+  background: #ffffff;
+  border-top: 1px solid #ebebeb;
+  padding: 48px 0;
+`;
+
+export const ExploreContent = styled.div`
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 24px;
+`;
+
+export const ExploreTitle = styled.h2`
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 32px;
+  color: #222;
+`;
+
+export const ExploreGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 32px;
+
+  @media(max-width: 992px){
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media(max-width: 768px){
+    grid-template-columns: 1fr;
+  }
+`;
+
+export const ExploreCard = styled.div`
+  cursor: pointer;
+
+  h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  p {
+    color: #717171;
+    font-size: 14px;
+    line-height: 1.4;
+    margin: 0;
+  }
+
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
+export const FooterSection = styled.footer`
+  margin-top: 0;
+  background: #ffffff;
+  border-top: 1px solid #ebebeb;
+  width: 100%;
+`;
+
+export const FooterContent = styled.div`
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 48px 24px 24px;
+`;
+
+export const FooterGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 48px;
+
+  @media (max-width: 992px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+export const FooterColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  h4 {
+    margin-bottom: 12px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  a {
+    color: #222;
+    text-decoration: none;
+    font-size: 14px;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+`;
+
+export const FooterBottom = styled.div`
+  margin-top: 48px;
+  padding-top: 24px;
+  border-top: 1px solid #dddddd;
+  font-size: 14px;
+  color: #717171;
 `;
