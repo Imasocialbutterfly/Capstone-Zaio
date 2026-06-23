@@ -1,5 +1,16 @@
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import { ShieldCheck } from 'lucide-react';
+
+const fadeSlideDown = keyframes`
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+`;
 
 export const Container = styled.div`
   max-width: 1120px;
@@ -66,7 +77,6 @@ export const ActionButton = styled.button`
   background: transparent;
   border: none;
   cursor: pointer;
-
   font-size: 14px;
   font-weight: 600;
   color: #222;
@@ -256,7 +266,6 @@ export const FeatureDescription = styled.p`
   margin: 0;
 `;
 
-
 export const AmenitiesSection = styled.div`
   margin-top: 1rem;
 `;
@@ -272,7 +281,6 @@ export const AmenityItem = styled.div`
   font-size: 0.9rem;
 `;
 
-
 export const MonthTitle = styled.h3`
   margin: 24px 0 16px;
   font-size: 22px;
@@ -281,15 +289,14 @@ export const MonthTitle = styled.h3`
 
 export const WeekRow = styled.div`
   display: grid;
-  grid-template-columns:
-    repeat(7, minmax(30px,1fr));
+  grid-template-columns: repeat(7, minmax(30px, 1fr));
   margin-bottom: 10px;
 
   span {
-    text-align:center;
-    font-size:12px;
-    color:#717171;
-    font-weight:600;
+    text-align: center;
+    font-size: 12px;
+    color: #717171;
+    font-weight: 600;
   }
 `;
 
@@ -335,31 +342,20 @@ export const CalendarDay = styled.button`
   position: relative;
 
   background: ${({ $startEnd, $range }) =>
-    $startEnd
-      ? "#222"
-      : $range
-        ? "#ebebeb"
-        : "transparent"};
+    $startEnd ? '#222' : $range ? '#ebebeb' : 'transparent'};
 
   color: ${({ $startEnd, $booked }) =>
-    $startEnd
-      ? "#fff"
-      : $booked
-        ? "#b0b0b0"
-        : "#222"};
+    $startEnd ? '#fff' : $booked ? '#b0b0b0' : '#222'};
 
-  text-decoration: ${({ $booked }) =>
-    $booked ? "line-through" : "none"};
+  text-decoration: ${({ $booked }) => ($booked ? 'line-through' : 'none')};
 
-  cursor: ${({ $booked }) =>
-    $booked ? "not-allowed" : "pointer"};
+  cursor: ${({ $booked }) => ($booked ? 'not-allowed' : 'pointer')};
 
   transition: 0.2s ease;
   font-size: 14px;
 
   &:hover {
-    background: ${({ $booked }) =>
-    !$booked ? "#f7f7f7" : undefined};
+    background: ${({ $booked }) => (!$booked ? '#f7f7f7' : undefined)};
   }
 `;
 
@@ -387,8 +383,6 @@ export const MonthHeading = styled.h3`
   margin-bottom: 20px;
   text-align: center;
 `;
-
-
 
 export const ReviewsSection = styled.div`
   width: 100%;
@@ -419,7 +413,8 @@ export const ReviewSummary = styled.div`
   margin-bottom: 64px;
 
   @media (max-width: 768px) {
-    grid-template-columns: 1fr;}
+    grid-template-columns: 1fr;
+  }
 `;
 
 export const ReviewMetric = styled.div`
@@ -458,10 +453,9 @@ export const ReviewsGrid = styled.div`
   gap: 40px 60px;
   margin-top: 48px;
 
-  @media(max-width:768px){
-    grid-template-columns:1fr;
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
   }
-
 `;
 
 export const ReviewerHeader = styled.div`
@@ -512,9 +506,7 @@ export const BookingCard = styled.div`
   border: 1px solid #dddddd;
   border-radius: 12px;
   padding: 24px;
-  box-shadow:
-    0 6px 16px rgba(0, 0, 0, 0.12);
-
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
   background: white;
 `;
 
@@ -780,7 +772,6 @@ export const HeaderRight = styled.div`
   gap: 16px;
 `;
 
-
 export const IconButton = styled.button`
   border: none;
   background: transparent;
@@ -805,9 +796,59 @@ export const ProfileButton = styled.button`
   padding: 8px 12px;
   background: white;
   cursor: pointer;
+  text-transform: none;
   &:hover {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 2px 8px rgba(102, 34, 34, 0.15);
   }
+`;
+
+export const ProfileMenuWrapper = styled.div`
+  position: relative;
+`;
+
+export const ProfileDropdown = styled.div`
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+
+  width: 240px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.12);
+  border: 1px solid #ebebeb;
+  padding: 8px 0;
+  z-index: 9999;
+  overflow: hidden;
+
+  animation: ${fadeSlideDown} 0.2s ease-out;
+  transform-origin: top right;
+`;
+
+export const DropdownItem = styled.button`
+  width: 100%;
+  border: none;
+  background: white;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+  padding: 14px 18px;
+  font-size: 14px;
+  font-weight: 400;
+  color: #222;
+  cursor: pointer;
+  text-transform: none;
+  font-family: inherit;
+
+  &:hover {
+    background-color: #f7f7f7;
+  }
+`;
+
+export const DropdownDivider = styled.div`
+  height: 1px;
+  background-color: #ddd;
+  margin: 8px 0;
 `;
 
 export const HostProfileSection = styled.section`
@@ -991,11 +1032,11 @@ export const ExploreGrid = styled.div`
   grid-template-columns: repeat(4, 1fr);
   gap: 32px;
 
-  @media(max-width: 992px){
+  @media (max-width: 992px) {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  @media(max-width: 768px){
+  @media (max-width: 768px) {
     grid-template-columns: 1fr;
   }
 `;
@@ -1074,6 +1115,70 @@ export const FooterBottom = styled.div`
   margin-top: 48px;
   padding-top: 24px;
   border-top: 1px solid #dddddd;
+  font-size: 14px;
+  color: #717171;
+`;
+
+export const SuccessOverlay = styled.div`
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  z-index: 9999;
+`;
+
+export const SuccessModal = styled.div`
+  background: white;
+  width: 380px;
+  padding: 32px;
+  border-radius: 24px;
+  text-align: center;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+  animation: popup 0.25s ease;
+
+  @keyframes popup {
+    from {
+      transform: scale(0.9);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+`;
+
+export const SuccessIcon = styled.div`
+  display: flex;
+  justify-content: center;
+  color: #00a699;
+  margin-bottom: 20px;
+`;
+
+export const SuccessTitle = styled.h2`
+  margin: 0;
+  font-size: 24px;
+`;
+
+export const SuccessText = styled.p`
+  color: #717171;
+  margin: 12px 0 20px;
+`;
+
+export const SuccessDetails = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+`;
+
+export const RedirectText = styled.p`
+  margin-top: 24px;
   font-size: 14px;
   color: #717171;
 `;

@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 import cors from 'cors'
 import userRoutes from './routes/userRoutes.js';
 import listingRoutes from './routes/listings.js';
+import reservationRoutes from './routes/reservations.js';
 
 dotenv.config()
 
@@ -17,8 +18,7 @@ for (const envVar of requiredEnvVars) {
 
 const app = express();
 
-// middleware
-app.use(express.json({ limit: '10mb'}));
+app.use(express.json({ limit: '10mb' }));
 app.use(cors({ origin: 'http://localhost:3000' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
@@ -31,9 +31,9 @@ app.get('/api/test', (req, res) => {
     res.json({ message: 'Server is working!' });
 });
 
-// routes
 app.use('/api/users', userRoutes)
 app.use('/api/listings', listingRoutes)
+app.use('/api/reservations', reservationRoutes)
 app.get('/', (req, res) => {
     res.json({ msg: "welcome to the app!!!" })
 })

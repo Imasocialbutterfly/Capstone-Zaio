@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../../utils/axiosInstance";
 import {
   format,
   differenceInDays,
@@ -31,6 +31,10 @@ import {
   DoorOpen,
   ShieldCheck,
   FileText,
+  CheckCircle2,
+  CalendarCheck,
+  Settings,
+  LogOut,
 } from "lucide-react";
 
 const ReservationPage = () => {
@@ -40,34 +44,29 @@ const ReservationPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [bookedDates, setBookedDates] = useState([]);
-  const availableDates = React.useMemo(() => {
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+
+  const availableDates = useMemo(() => {
     if (!listing?.availability) return [];
-
     const dates = [];
-
     listing.availability.forEach((range) => {
       if (!range.available) return;
-
       const days = eachDayOfInterval({
         start: new Date(range.start),
         end: new Date(range.end),
       });
-
-      days.forEach((day) => {
-        dates.push(format(day, "yyyy-MM-dd"));
-      });
+      days.forEach((day) => dates.push(format(day, "yyyy-MM-dd")));
     });
-
     return dates;
   }, [listing]);
 
+  const [reservationSuccess, setReservationSuccess] = useState(false);
   const [checkIn, setCheckIn] = useState(
     format(addDays(new Date(), 1), "yyyy-MM-dd"),
   );
   const [checkOut, setCheckOut] = useState(
     format(addDays(new Date(), 3), "yyyy-MM-dd"),
   );
-
   const [calendarStart, setCalendarStart] = useState(checkIn);
   const [calendarEnd, setCalendarEnd] = useState(checkOut);
 
@@ -81,21 +80,19 @@ const ReservationPage = () => {
   useEffect(() => {
     const fetchBookedDates = async () => {
       try {
-        const { data } = await axios.get(`/api/listings/${id}/booked-dates`);
-
+        const { data } = await api.get(`/listings/${id}/booked-dates`);
         setBookedDates(data);
       } catch (err) {
         console.log(err);
       }
     };
-
     fetchBookedDates();
   }, [id]);
 
   useEffect(() => {
     const fetchListing = async () => {
       try {
-        const { data } = await axios.get(`/api/listings/${id}`);
+        const { data } = await api.get(`/listings/${id}`);
         setListing(data);
       } catch (err) {
         setError(err.response?.data?.error || "Failed to load listing");
@@ -108,23 +105,32 @@ const ReservationPage = () => {
 
   useEffect(() => {
     if (!availableDates.length) return;
-
     const firstDate = availableDates[0];
-
     setCheckIn(firstDate);
-
     setCheckOut(format(addDays(new Date(firstDate), 3), "yyyy-MM-dd"));
   }, [availableDates]);
+
+  const profileMenuRef = React.useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        profileMenuRef.current &&
+        !profileMenuRef.current.contains(event.target)
+      ) {
+        setShowProfileMenu(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const selectThreeNightRange = (startDate) => {
     const startIndex = availableDates.findIndex((d) => d === startDate);
     if (startIndex === -1) return;
-
     const start = availableDates[startIndex];
     const end = availableDates[startIndex + 3];
-
     if (!end) return;
-
     setCheckIn(start);
     setCheckOut(end);
     setCalendarStart(start);
@@ -147,7 +153,6 @@ const ReservationPage = () => {
       const placeholder = { url: "/placeholder.jpg", caption: "No image" };
       return { main: placeholder, small: Array(4).fill(placeholder) };
     }
-
     const mainImage = images[0];
     const smallImages = [];
     for (let i = 1; i <= 4; i++) {
@@ -155,12 +160,6 @@ const ReservationPage = () => {
     }
     return { main: mainImage, small: smallImages };
   };
-
-  const nights = differenceInDays(new Date(checkOut), new Date(checkIn));
-  const totalPrice = listing ? listing.price * nights : 0;
-  const serviceFee = totalPrice * 0.12;
-  const cleaningFee = 45;
-  const grandTotal = totalPrice + serviceFee + cleaningFee;
 
   const handleReserve = async () => {
     if (!listing) return;
@@ -171,8 +170,8 @@ const ReservationPage = () => {
     setSubmitting(true);
     try {
       const token = localStorage.getItem("token");
-      await axios.post(
-        "/api/reservations",
+      await api.post(
+        "/reservations",
         {
           listingId: listing._id,
           startDate: checkIn,
@@ -180,9 +179,16 @@ const ReservationPage = () => {
           guests,
           totalPrice: grandTotal,
         },
-        { headers: { Authorization: `Bearer ${token}` } },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
       );
-      navigate("/trips");
+      setReservationSuccess(true);
+      setTimeout(() => {
+        navigate("/my-reservations");
+      }, 2500);
     } catch (err) {
       alert(err.response?.data?.error || "Booking failed");
     } finally {
@@ -204,16 +210,13 @@ const ReservationPage = () => {
     );
 
   const { main: mainImage, small: smallImages } = getGalleryImages();
-
   const currentMonth = new Date();
-
   const secondMonth = addDays(endOfMonth(currentMonth), 1);
 
   const isDateBooked = (date) => {
     return bookedDates.some((booking) => {
       const start = new Date(booking.startDate);
       const end = new Date(booking.endDate);
-
       return date >= start && date <= end;
     });
   };
@@ -222,10 +225,8 @@ const ReservationPage = () => {
     const current = format(date, "yyyy-MM-dd");
     const start = format(new Date(checkIn), "yyyy-MM-dd");
     const end = format(new Date(checkOut), "yyyy-MM-dd");
-
     return {
       startEnd: current === start || current === end,
-
       range: current > start && current < end,
     };
   };
@@ -233,28 +234,24 @@ const ReservationPage = () => {
   const buildMonthCalendar = (monthDate) => {
     const monthStart = startOfMonth(monthDate);
     const monthEnd = endOfMonth(monthDate);
-
     const firstWeekDay = getDay(monthStart);
-
     const days = [];
-
     for (let i = 0; i < firstWeekDay; i++) {
       days.push(null);
     }
-
-    const monthDays = eachDayOfInterval({
-      start: monthStart,
-      end: monthEnd,
-    });
-
+    const monthDays = eachDayOfInterval({ start: monthStart, end: monthEnd });
     days.push(...monthDays);
-
     return days;
   };
 
   const currentMonthDays = buildMonthCalendar(currentMonth);
-
   const secondMonthDays = buildMonthCalendar(secondMonth);
+
+  const nights = differenceInDays(new Date(checkOut), new Date(checkIn));
+  const totalPrice = listing ? listing.price * nights : 0;
+  const serviceFee = totalPrice * 0.12;
+  const cleaningFee = 45;
+  const grandTotal = totalPrice + serviceFee + cleaningFee;
 
   return (
     <>
@@ -283,10 +280,47 @@ const ReservationPage = () => {
             <S.IconButton>
               <Globe size={18} />
             </S.IconButton>
-            <S.ProfileButton>
-              <Menu size={18} />
-              <User size={18} />
-            </S.ProfileButton>
+            <S.ProfileMenuWrapper ref={profileMenuRef}>
+              <S.ProfileButton
+                onClick={() => setShowProfileMenu(!showProfileMenu)}
+              >
+                <Menu size={18} />
+                <User size={18} />
+              </S.ProfileButton>
+
+              {showProfileMenu && (
+                <S.ProfileDropdown>
+                  <S.DropdownItem onClick={() => navigate("/messages")}>
+                    Messages
+                  </S.DropdownItem>
+                  <S.DropdownItem onClick={() => navigate("/my-reservations")}>
+                    Trips
+                  </S.DropdownItem>
+                  <S.DropdownItem onClick={() => navigate("/wishlist")}>
+                    Wishlist
+                  </S.DropdownItem>
+                  <S.DropdownDivider />
+                  <S.DropdownItem onClick={() => navigate("/become-host")}>
+                    Become a Host
+                  </S.DropdownItem>
+                  <S.DropdownItem onClick={() => navigate("/account")}>
+                    Account
+                  </S.DropdownItem>
+                  <S.DropdownItem onClick={() => navigate("/help")}>
+                    Help Center
+                  </S.DropdownItem>
+                  <S.DropdownDivider />
+                  <S.DropdownItem
+                    onClick={() => {
+                      localStorage.removeItem("token");
+                      navigate("/login");
+                    }}
+                  >
+                    Log Out
+                  </S.DropdownItem>
+                </S.ProfileDropdown>
+              )}
+            </S.ProfileMenuWrapper>
           </S.HeaderRight>
         </S.HeaderContainer>
       </S.ReservationHeader>
@@ -295,7 +329,6 @@ const ReservationPage = () => {
         <S.ListingHeaderContent>
           <S.ListingInfo>
             <S.ListingTitle>{listing.title}</S.ListingTitle>
-
             <S.ListingMeta>
               <Star size={14} fill="currentColor" />
               <span>{listing.rating || 4.8}</span>
@@ -309,7 +342,6 @@ const ReservationPage = () => {
               <Share size={16} />
               <span>Share</span>
             </S.ActionButton>
-
             <S.ActionButton>
               <Heart size={16} />
               <span>Save</span>
@@ -335,19 +367,18 @@ const ReservationPage = () => {
               ))}
             </S.SmallImagesGrid>
           </S.ImageGallery>
+
           <S.LeftColumn>
             <S.HostSection>
               <div>
                 <S.HostHeading>
                   Entire rental unit hosted by {listing.host?.username}
                 </S.HostHeading>
-
                 <S.PropertyDetails>
                   {listing.maxGuests} guests · {listing.bedrooms} bedrooms ·{" "}
                   {listing.bathrooms} bathrooms
                 </S.PropertyDetails>
               </div>
-
               <S.HostAvatar
                 src="/default-avatar.jpg"
                 alt={listing.host?.username}
@@ -364,7 +395,6 @@ const ReservationPage = () => {
                   </S.FeatureDescription>
                 </S.FeatureContent>
               </S.FeatureItem>
-
               <S.FeatureItem>
                 <KeyRound size={24} />
                 <S.FeatureContent>
@@ -374,7 +404,6 @@ const ReservationPage = () => {
                   </S.FeatureDescription>
                 </S.FeatureContent>
               </S.FeatureItem>
-
               <S.FeatureItem>
                 <MapPin size={24} />
                 <S.FeatureContent>
@@ -405,7 +434,6 @@ const ReservationPage = () => {
                 <h2>
                   {nights} nights in {listing.title}
                 </h2>
-
                 <p>
                   {format(new Date(checkIn), "dd MMM yyyy")} –{" "}
                   {format(new Date(checkOut), "dd MMM yyyy")}
@@ -417,7 +445,6 @@ const ReservationPage = () => {
                   <S.MonthHeading>
                     {format(currentMonth, "MMMM yyyy")}
                   </S.MonthHeading>
-
                   <S.WeekRow>
                     <span>Su</span>
                     <span>Mo</span>
@@ -427,19 +454,11 @@ const ReservationPage = () => {
                     <span>Fr</span>
                     <span>Sa</span>
                   </S.WeekRow>
-
                   <S.CalendarGrid>
                     {currentMonthDays.map((date, index) => {
-                      if (!date) {
-                        return <S.EmptyCell key={index} />;
-                      }
-
+                      if (!date) return <S.EmptyCell key={index} />;
                       const booked = isDateBooked(date);
-
-                      const dateString = format(date, "yyyy-MM-dd");
-
                       const { startEnd, range } = getDateStatus(date);
-
                       return (
                         <S.CalendarDay
                           key={index}
@@ -449,11 +468,8 @@ const ReservationPage = () => {
                           disabled={booked}
                           onClick={() => {
                             if (booked) return;
-
                             const start = format(date, "yyyy-MM-dd");
-
                             const end = format(addDays(date, 3), "yyyy-MM-dd");
-
                             setCheckIn(start);
                             setCheckOut(end);
                           }}
@@ -469,7 +485,6 @@ const ReservationPage = () => {
                   <S.MonthHeading>
                     {format(secondMonth, "MMMM yyyy")}
                   </S.MonthHeading>
-
                   <S.WeekRow>
                     <span>Su</span>
                     <span>Mo</span>
@@ -479,19 +494,11 @@ const ReservationPage = () => {
                     <span>Fr</span>
                     <span>Sa</span>
                   </S.WeekRow>
-
                   <S.CalendarGrid>
                     {secondMonthDays.map((date, index) => {
-                      if (!date) {
-                        return <S.EmptyCell key={index} />;
-                      }
-
+                      if (!date) return <S.EmptyCell key={index} />;
                       const booked = isDateBooked(date);
-
-                      const dateString = format(date, "yyyy-MM-dd");
-
                       const { startEnd, range } = getDateStatus(date);
-
                       return (
                         <S.CalendarDay
                           key={index}
@@ -501,11 +508,8 @@ const ReservationPage = () => {
                           disabled={booked}
                           onClick={() => {
                             if (booked) return;
-
                             const start = format(date, "yyyy-MM-dd");
-
                             const end = format(addDays(date, 3), "yyyy-MM-dd");
-
                             setCheckIn(start);
                             setCheckOut(end);
                           }}
@@ -624,7 +628,9 @@ const ReservationPage = () => {
               </S.PriceBreakdown>
 
               <S.ReserveButton onClick={handleReserve} disabled={submitting}>
-                {submitting ? "Processing..." : "Reserve"}
+                {submitting
+                  ? "Confirming..."
+                  : `Reserve · R${grandTotal.toFixed(2)}`}
               </S.ReserveButton>
               <S.PaymentDisclaimer>
                 You won't be charged yet
@@ -643,7 +649,6 @@ const ReservationPage = () => {
               </S.ProgressBar>
               <strong>4.9</strong>
             </S.ReviewMetric>
-
             <S.ReviewMetric>
               <MessageCircle size={18} />
               <span>Communication</span>
@@ -652,7 +657,6 @@ const ReservationPage = () => {
               </S.ProgressBar>
               <strong>5.0</strong>
             </S.ReviewMetric>
-
             <S.ReviewMetric>
               <DoorOpen size={18} />
               <span>Check-in</span>
@@ -661,7 +665,6 @@ const ReservationPage = () => {
               </S.ProgressBar>
               <strong>4.9</strong>
             </S.ReviewMetric>
-
             <S.ReviewMetric>
               <BadgeCheck size={18} />
               <span>Accuracy</span>
@@ -670,7 +673,6 @@ const ReservationPage = () => {
               </S.ProgressBar>
               <strong>4.8</strong>
             </S.ReviewMetric>
-
             <S.ReviewMetric>
               <MapPinned size={18} />
               <span>Location</span>
@@ -679,7 +681,6 @@ const ReservationPage = () => {
               </S.ProgressBar>
               <strong>4.9</strong>
             </S.ReviewMetric>
-
             <S.ReviewMetric>
               <Wallet size={18} />
               <span>Value</span>
@@ -694,80 +695,60 @@ const ReservationPage = () => {
             <S.ReviewCard>
               <S.ReviewerHeader>
                 <S.ReviewerAvatar src="https://i.pravatar.cc/150?img=11" />
-
                 <div>
                   <S.ReviewerName>Sarah</S.ReviewerName>
-
                   <S.ReviewDate>March 2026</S.ReviewDate>
                 </div>
               </S.ReviewerHeader>
-
               <S.ReviewRating>★★★★</S.ReviewRating>
-
               <S.ReviewText>
                 Beautiful property. Everything was spotless and exactly as
                 described. The host was responsive and check-in was effortless.
               </S.ReviewText>
             </S.ReviewCard>
-
             <S.ReviewCard>
               <S.ReviewerHeader>
                 <S.ReviewerAvatar src="https://i.pravatar.cc/150?img=23" />
-
                 <div>
                   <S.ReviewerName>David</S.ReviewerName>
-
                   <S.ReviewDate>January 2026</S.ReviewDate>
                 </div>
               </S.ReviewerHeader>
-
               <S.ReviewRating>★★★★★</S.ReviewRating>
-
               <S.ReviewText>
                 Fantastic stay. The location is perfect and the apartment feels
                 much larger than the photos suggest.
               </S.ReviewText>
             </S.ReviewCard>
-
             <S.ReviewCard>
               <S.ReviewerHeader>
                 <S.ReviewerAvatar src="https://i.pravatar.cc/150?img=35" />
-
                 <div>
                   <S.ReviewerName>Jessica</S.ReviewerName>
-
                   <S.ReviewDate>December 2025</S.ReviewDate>
                 </div>
               </S.ReviewerHeader>
-
               <S.ReviewRating>★★★★★</S.ReviewRating>
-
               <S.ReviewText>
                 We loved the place. Very clean, safe and close to everything we
                 needed. Would definitely book again.
               </S.ReviewText>
             </S.ReviewCard>
-
             <S.ReviewCard>
               <S.ReviewerHeader>
                 <S.ReviewerAvatar src="https://i.pravatar.cc/150?img=49" />
-
                 <div>
                   <S.ReviewerName>Michael</S.ReviewerName>
-
                   <S.ReviewDate>November 2025</S.ReviewDate>
                 </div>
               </S.ReviewerHeader>
-
               <S.ReviewRating>★★</S.ReviewRating>
-
               <S.ReviewText>
                 Excellent communication from the host and an incredibly smooth
                 stay. Highly recommended.
               </S.ReviewText>
             </S.ReviewCard>
           </S.ReviewsGrid>
-
           <S.ShowAllReviewsButton>Show all reviews</S.ShowAllReviewsButton>
         </S.ReviewsSection>
 
@@ -777,51 +758,42 @@ const ReservationPage = () => {
               src={listing.host?.profile?.avatar || "/default-avatar.jpg"}
               alt={listing.host?.username}
             />
-
             <div>
               <S.HostProfileTitle>
                 Hosted by{" "}
                 {listing.host?.profile?.firstName || listing.host?.username}
               </S.HostProfileTitle>
-
               <S.HostProfileSubtitle>
                 Host since {new Date(listing.host?.createdAt).getFullYear()}
               </S.HostProfileSubtitle>
             </div>
           </S.HostProfileHeader>
-
           <S.HostStats>
             <S.HostStat>
               <strong>★ 4.95</strong>
               <span>Rating</span>
             </S.HostStat>
-
             <S.HostStat>
               <strong>98%</strong>
               <span>Response rate</span>
             </S.HostStat>
-
             <S.HostStat>
               <strong>1 hr</strong>
               <span>Response time</span>
             </S.HostStat>
           </S.HostStats>
-
           <S.HostBio>
             {listing.host?.profile?.bio ||
               `Hi, I'm ${
                 listing.host?.profile?.firstName || listing.host?.username
               }. I enjoy welcoming guests and making sure they have a comfortable stay. Feel free to reach out if you have any questions about the property or surrounding area.`}
           </S.HostBio>
-
           <S.HostHighlights>
             <div>✓ Superhost</div>
             <div>✓ Experienced host</div>
             <div>✓ Helps guests feel at home</div>
           </S.HostHighlights>
-
           <S.ContactHostButton>Contact Host</S.ContactHostButton>
-
           <S.PaymentDisclaimerSection>
             <S.DisclaimerIcon />
             <span>
@@ -834,62 +806,45 @@ const ReservationPage = () => {
         <S.WhatToKnowSection>
           <S.WhatToKnowContent>
             <S.WhatToKnowTitle>What to know</S.WhatToKnowTitle>
-
             <S.WhatToKnowGrid>
               <S.WhatToKnowColumn>
                 <S.WhatToKnowHeading>
-                  <Home size={18} />
-                  House rules
+                  <Home size={18} /> House rules
                 </S.WhatToKnowHeading>
-
                 <S.WhatToKnowItem>Check-in after 3:00 PM</S.WhatToKnowItem>
-
                 <S.WhatToKnowItem>Checkout before 11:00 AM</S.WhatToKnowItem>
-
                 <S.WhatToKnowItem>
                   Maximum {listing.maxGuests} guests
                 </S.WhatToKnowItem>
-
                 {listing.rules?.slice(0, 3).map((rule, index) => (
                   <S.WhatToKnowItem key={index}>{rule}</S.WhatToKnowItem>
                 ))}
               </S.WhatToKnowColumn>
-
               <S.WhatToKnowColumn>
                 <S.WhatToKnowHeading>
-                  <ShieldCheck size={18} />
-                  Safety & property
+                  <ShieldCheck size={18} /> Safety & property
                 </S.WhatToKnowHeading>
-
                 <S.WhatToKnowItem>
                   Carbon monoxide alarm not reported
                 </S.WhatToKnowItem>
-
                 <S.WhatToKnowItem>Smoke alarm not reported</S.WhatToKnowItem>
-
                 <S.WhatToKnowItem>
                   Exterior security cameras may be present
                 </S.WhatToKnowItem>
-
                 <S.WhatToKnowItem>
                   Property type: {listing.propertyType}
                 </S.WhatToKnowItem>
               </S.WhatToKnowColumn>
-
               <S.WhatToKnowColumn>
                 <S.WhatToKnowHeading>
-                  <FileText size={18} />
-                  Cancellation policy
+                  <FileText size={18} /> Cancellation policy
                 </S.WhatToKnowHeading>
-
                 <S.WhatToKnowItem>
                   Free cancellation for 48 hours.
                 </S.WhatToKnowItem>
-
                 <S.WhatToKnowItem>
                   Review the full cancellation policy before booking.
                 </S.WhatToKnowItem>
-
                 <S.WhatToKnowItem>
                   Reservation dates can be changed subject to availability.
                 </S.WhatToKnowItem>
@@ -904,23 +859,19 @@ const ReservationPage = () => {
           <S.ExploreTitle>
             Explore other options in {listing.location || "this area"}
           </S.ExploreTitle>
-
           <S.ExploreGrid>
             <S.ExploreCard>
               <h3>{listing.location || "Nearby"} homes</h3>
               <p>Comfortable places to stay nearby</p>
             </S.ExploreCard>
-
             <S.ExploreCard>
               <h3>Apartments in {listing.location || "your area"}</h3>
               <p>Modern apartments and rentals</p>
             </S.ExploreCard>
-
             <S.ExploreCard>
               <h3>Vacation rentals nearby</h3>
               <p>Find unique stays and experiences</p>
             </S.ExploreCard>
-
             <S.ExploreCard>
               <h3>Places to stay</h3>
               <p>Discover more Airbnb listings</p>
@@ -934,7 +885,6 @@ const ReservationPage = () => {
           <S.FooterGrid>
             <S.FooterColumn>
               <h4>Support</h4>
-
               <a href="/">Help Centre</a>
               <a href="/">AirCover</a>
               <a href="/">Anti-discrimination</a>
@@ -942,29 +892,23 @@ const ReservationPage = () => {
               <a href="/">Cancellation options</a>
               <a href="/">Report neighbourhood concern</a>
             </S.FooterColumn>
-
             <S.FooterColumn>
               <h4>Community</h4>
-
               <a href="/">Airbnb.org</a>
               <a href="/">Support Afghan refugees</a>
               <a href="/">Combating discrimination</a>
               <a href="/">Diversity & belonging</a>
             </S.FooterColumn>
-
             <S.FooterColumn>
               <h4>Hosting</h4>
-
               <a href="/">Airbnb your home</a>
               <a href="/">AirCover for Hosts</a>
               <a href="/">Hosting resources</a>
               <a href="/">Community forum</a>
               <a href="/">Responsible hosting</a>
             </S.FooterColumn>
-
             <S.FooterColumn>
               <h4>Airbnb</h4>
-
               <a href="/">Newsroom</a>
               <a href="/">New features</a>
               <a href="/">Careers</a>
@@ -972,12 +916,34 @@ const ReservationPage = () => {
               <a href="/">Gift cards</a>
             </S.FooterColumn>
           </S.FooterGrid>
-
           <S.FooterBottom>
             © 2026 Airbnb, Inc. · Privacy · Terms · Sitemap
           </S.FooterBottom>
         </S.FooterContent>
       </S.FooterSection>
+
+      {reservationSuccess && (
+        <S.SuccessOverlay>
+          <S.SuccessModal>
+            <S.SuccessIcon>
+              <CheckCircle2 size={48} />
+            </S.SuccessIcon>
+            <S.SuccessTitle>Reservation confirmed</S.SuccessTitle>
+            <S.SuccessText>
+              Your stay at {listing.title} has been booked.
+            </S.SuccessText>
+            <S.SuccessDetails>
+              <CalendarCheck size={18} />
+              <span>
+                {format(new Date(checkIn), "dd MMM yyyy")}
+                {" - "}
+                {format(new Date(checkOut), "dd MMM yyyy")}
+              </span>
+            </S.SuccessDetails>
+            <S.RedirectText>Taking you to My Reservations...</S.RedirectText>
+          </S.SuccessModal>
+        </S.SuccessOverlay>
+      )}
     </>
   );
 };

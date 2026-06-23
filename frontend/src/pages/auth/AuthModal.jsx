@@ -24,7 +24,7 @@ const AuthModal = ({
   mode: initialMode,
   setMode,
   error,
-  setAuthError // Added prop to clear errors
+  setAuthError 
 }) => {
   const [formData, setFormData] = useState({
     email: "",
@@ -32,10 +32,10 @@ const AuthModal = ({
     username: ""
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [localError, setLocalError] = useState(""); // For client-side validation
+  const [localError, setLocalError] = useState("");
   const isSignup = initialMode === "signup";
 
-  // Reset form when mode changes
+ 
   useEffect(() => {
     setFormData({ email: "", password: "", username: "" });
     setLocalError("");
@@ -46,7 +46,7 @@ const AuthModal = ({
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
     
-    // Validate password in real-time
+  
     if (name === "password") {
       validatePassword(value);
     }
@@ -65,7 +65,7 @@ const AuthModal = ({
     e.preventDefault();
     if (isLoading) return;
 
-    // Client-side validation
+   
     if (isSignup && !formData.username.trim()) {
       setLocalError("Username is required");
       return;

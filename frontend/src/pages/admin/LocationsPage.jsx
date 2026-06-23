@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import airbnbLogo from "../../assets/airbnb-logo.png";
 import * as S from "./LocationsPage.styled";
+import AuthModal from "../auth/AuthModal";
 
 const LocationsPage = () => {
   const navigate = useNavigate();
@@ -30,6 +31,10 @@ const LocationsPage = () => {
     const savedUser = localStorage.getItem("user");
     return savedUser ? JSON.parse(savedUser) : null;
   });
+
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [authMode, setAuthMode] = useState("login");
+  const [authError, setAuthError] = useState("");
 
   const propertyTypes = [
     "All",
@@ -121,13 +126,58 @@ const LocationsPage = () => {
     return true;
   });
 
+  const resetAuthForm = () => {
+    setAuthError("");
+    setAuthMode("login");
+  };
+
+  const handleAuthSubmit = async (credentials) => {
+    try {
+      setAuthError("");
+      const endpoint = authMode === "login" ? "login" : "signup";
+
+      const response = await fetch(
+        `http://localhost:4000/api/users/${endpoint}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(credentials),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Authentication failed");
+      }
+
+      localStorage.setItem("user", JSON.stringify(data.user));
+      localStorage.setItem("token", data.token);
+      setCurrentUser(data.user);
+      setShowAuthModal(false);
+    } catch (error) {
+      setAuthError(error.message || "An error occurred");
+      console.error("Auth error:", error);
+    }
+  };
+
+  const handleProtectedAction = (action) => {
+    if (!currentUser) {
+      setShowAuthModal(true);
+      return;
+    }
+    action();
+  };
+
   const handleListingClick = (id) => {
     navigate(`/listing/${id}`);
   };
 
   const handleBookClick = (e, listingId) => {
     e.stopPropagation();
-    console.log("Book listing:", listingId);
+    handleProtectedAction(() => {
+      navigate(`/reservation/${listingId}`);
+    });
   };
 
   const handleLogoClick = () => {
@@ -138,7 +188,7 @@ const LocationsPage = () => {
     if (currentUser) {
       setShowDropdown(!showDropdown);
     } else {
-      navigate("/auth");
+      setShowAuthModal(true);
     }
   };
 
@@ -185,9 +235,11 @@ const LocationsPage = () => {
                 <User size={18} />
               </S.ProfileMenu>
 
-              {showDropdown && (
-                <S.DropdownMenu>
-                  <S.MenuItem onClick={() => navigate("/trips")}>Trips</S.MenuItem>
+              {showDropdown && currentUser && (
+                <S.DropdownMenu ref={dropdownRef}>
+                  <S.MenuItem onClick={() => navigate("/my-reservations")}>
+                    Trips
+                  </S.MenuItem>
 
                   <S.MenuItem onClick={() => navigate("/wishlist")}>
                     Wishlist
@@ -432,6 +484,19 @@ const LocationsPage = () => {
           </>
         )}
       </S.LocationsContainer>
+
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => {
+          setShowAuthModal(false);
+          resetAuthForm();
+        }}
+        onAuthSubmit={handleAuthSubmit}
+        mode={authMode}
+        setMode={setAuthMode}
+        error={authError}
+        setAuthError={setAuthError}
+      />
     </div>
   );
 };

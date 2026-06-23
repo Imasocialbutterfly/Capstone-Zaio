@@ -7,6 +7,7 @@ import HostDashboard from "./pages/admin/dashboard/HostDashboard";
 import EditListing from "./pages/admin/EditListing";
 import LocationsPage from "./pages/admin/LocationsPage";
 import ReservationPage from "./pages/admin/ReservationPage";
+import MyReservationsPage from './pages/admin/MyReservationsPage';
 
 const App = () => {
   return (
@@ -15,10 +16,11 @@ const App = () => {
         <Routes>
           <Route path="/login" />
           <Route path="/" element={<Dashboard />} />
-          <Route path="/manage-listings" element={<HostDashboard />}/>
-          <Route path="/edit-listing/:id" element={<EditListing />}/>
-          <Route path="/locations" element={<LocationsPage />}/>
-          <Route path="/listing/:id" element={<ReservationPage />}/>
+          <Route path="/manage-listings" element={<HostDashboard />} />
+          <Route path="/edit-listing/:id" element={<EditListing />} />
+          <Route path="/locations" element={<LocationsPage />} />
+          <Route path="/listing/:id" element={<ReservationPage />} />
+          <Route path="/my-reservations" element={<MyReservationsPage />} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
