@@ -261,8 +261,6 @@ const Dashboard = () => {
                 <S.NavItem>Experiences</S.NavItem>
                 <S.NavItem>Online Experiences</S.NavItem>
               </S.HeaderCenter>
-            {/* <S.HeaderTopSection>
-            </S.HeaderTopSection> */}
 
             <S.HeaderRight>
               {currentUser?.role === "host" && (
@@ -326,7 +324,6 @@ const Dashboard = () => {
                             <S.MenuItem
                               onClick={() => navigate("/manage-listings")}
                             >
-                              <Home size={16} style={{ marginRight: "8px" }} />
                               Manage Listings
                             </S.MenuItem>
                             <S.MenuItem>Host Calendar</S.MenuItem>
@@ -340,7 +337,9 @@ const Dashboard = () => {
                             </S.UpgradeButton>
                           </S.MenuItem>
                         )}
-                        <S.MenuItem>My Trips</S.MenuItem>
+                        <S.MenuItem onClick={() => navigate("/my-reservations")}>
+                          My Trips
+                        </S.MenuItem>
                         <S.MenuItem>Saved Homes</S.MenuItem>
                       </>
                     ) : (

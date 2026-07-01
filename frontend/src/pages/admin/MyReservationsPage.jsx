@@ -22,10 +22,13 @@ const MyReservationsPage = () => {
   const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [currentUser, setCurrentUser] = useState(() => {
+    const savedUser = localStorage.getItem("user");
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
 
   const profileMenuRef = useRef(null);
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -69,6 +72,45 @@ const MyReservationsPage = () => {
     }
   };
 
+  const handleBecomeHost = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const response = await fetch(
+        "http://localhost:4000/api/users/become-host",
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        },
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to become host");
+      }
+
+      setCurrentUser(data.user);
+      localStorage.setItem("user", JSON.stringify(data.user));
+
+      alert("Congratulations! You are now a host! 🎉");
+    } catch (error) {
+      console.error("Become host error:", error);
+      alert(error.message);
+    }
+  };
+
+  const handleCreateListingClick = () => {
+    if (currentUser?.role === "host") {
+      navigate("/manage-listings");
+    } else {
+      handleBecomeHost();
+    }
+  };
+
   return (
     <S.Page>
       <S.Header>
@@ -95,18 +137,16 @@ const MyReservationsPage = () => {
                   Messages
                 </S.DropdownItem>
 
-                <S.DropdownItem onClick={() => navigate("/my-reservations")}>
-                  Trips
-                </S.DropdownItem>
-
                 <S.DropdownItem onClick={() => navigate("/wishlist")}>
                   Wishlist
                 </S.DropdownItem>
 
                 <S.DropdownDivider />
 
-                <S.DropdownItem onClick={() => navigate("/become-host")}>
-                  Become a Host
+                <S.DropdownItem onClick={handleBecomeHost}>
+                  {currentUser?.role === "host"
+                    ? "You are a Host"
+                    : "Become a Host"}
                 </S.DropdownItem>
 
                 <S.DropdownItem onClick={() => navigate("/account")}>
@@ -122,6 +162,7 @@ const MyReservationsPage = () => {
                 <S.DropdownItem
                   onClick={() => {
                     localStorage.removeItem("token");
+                    localStorage.removeItem("user");
                     navigate("/login");
                   }}
                 >
@@ -136,17 +177,38 @@ const MyReservationsPage = () => {
           <Link to="/">
             <S.NavButton>View Reservations</S.NavButton>
           </Link>
-          <Link to="/manage-listings">
+          <Link to="/locations">
             <S.NavButton>View Listings</S.NavButton>
           </Link>
-          <Link to="/locations">
-            <S.NavButton>Create Listing</S.NavButton>
-          </Link>
+          <S.NavButton onClick={handleCreateListingClick}>
+            {currentUser?.role === "host"
+              ? "Create Listing"
+              : "Become a Host to Create Listing"}
+          </S.NavButton>
         </S.Nav>
       </S.Header>
 
       <S.Content>
         <S.Title>My Reservations</S.Title>
+
+        {currentUser && currentUser?.role !== "host" && (
+          <S.BecomeHostCard>
+            <S.BecomeHostContent>
+              <S.BecomeHostText>
+                <h3>Become a Host</h3>
+
+                <p>
+                  Turn your extra space into extra income. Share your place,
+                  welcome guests, and start earning.
+                </p>
+              </S.BecomeHostText>
+
+              <S.BecomeHostButton onClick={handleBecomeHost}>
+                Get started
+              </S.BecomeHostButton>
+            </S.BecomeHostContent>
+          </S.BecomeHostCard>
+        )}
 
         {loading ? (
           <p>Loading...</p>

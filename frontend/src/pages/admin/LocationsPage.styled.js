@@ -252,16 +252,42 @@ export const Price = styled.div`
 `;
 
 export const BookButton = styled.button`
-  padding: 0.5rem 1rem;
-  background: #FF385C;
-  color: white;
+  min-width: 100px;
+  height: 44px;
+  padding: 0 20px;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
+  background: linear-gradient(
+    135deg,
+    #e61e4d 0%,
+    #d70466 50%,
+    #bd1e59 100%
+  );
+
+  color: white;
+  font-size: 14px;
   font-weight: 600;
+  letter-spacing: 0.2px;
   cursor: pointer;
-  
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    opacity 0.2s ease;
+
+  box-shadow:
+    0 2px 8px rgba(230, 30, 77, 0.25),
+    0 1px 2px rgba(0, 0, 0, 0.08);
+
   &:hover {
-    background: #E31C5F;
+    transform: translateY(-1px);
+    box-shadow:
+      0 8px 20px rgba(230, 30, 77, 0.3),
+      0 2px 4px rgba(0, 0, 0, 0.12);
+  }
+
+  &:active {
+    transform: translateY(0);
   }
 `;
 

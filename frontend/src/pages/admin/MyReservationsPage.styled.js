@@ -138,6 +138,68 @@ export const NavButton = styled.button`
   }
 `;
 
+export const BecomeHostCard = styled.div`
+  margin-bottom: 48px;
+  border: 1px solid #dddddd;
+  border-radius: 16px;
+  background: #ffffff;
+  overflow: hidden;
+`;
+
+export const BecomeHostContent = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 32px;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+`;
+
+export const BecomeHostText = styled.div`
+  h3 {
+    margin: 0 0 8px;
+    font-size: 24px;
+    font-weight: 600;
+    color: #222;
+  }
+
+  p {
+    margin: 0;
+    color: #717171;
+    font-size: 15px;
+    line-height: 1.5;
+    max-width: 500px;
+  }
+`;
+
+export const BecomeHostButton = styled.button`
+  background: linear-gradient(
+    135deg,
+    #e61e4d 0%,
+    #d70466 50%,
+    #bd1e59 100%
+  );
+
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 14px 24px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: scale(1.02);
+  }
+`;
+
 export const Content = styled.div`
   max-width: 1280px;
   margin: 0 auto;
